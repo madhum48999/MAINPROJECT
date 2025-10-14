@@ -7,8 +7,7 @@ import lombok.Data;
 @Data
 public class Patient {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String pid;
 
     private String name;
 

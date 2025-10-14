@@ -11,11 +11,9 @@ public class MedicalRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String patientId;
-
-    private Long doctorId;
-
-    private Long hospitalId;
+    private String patientId;   // String to match Patient.pid
+    private String doctorId;    // String to match Doctor.did
+    private String hospitalId;  // String to match Hospital.hid
 
     private LocalDate visitDate;
 

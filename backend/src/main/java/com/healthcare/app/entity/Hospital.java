@@ -7,8 +7,7 @@ import lombok.Data;
 @Data
 public class Hospital {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String hid;
 
     private String hospitalName;
 

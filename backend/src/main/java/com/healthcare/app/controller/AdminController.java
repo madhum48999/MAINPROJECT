@@ -58,7 +58,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/patients/{id}")
-    public ResponseEntity<Void> deletePatient(@PathVariable Long id) {
+    public ResponseEntity<Void> deletePatient(@PathVariable String id) {
         adminService.deletePatient(id);
         return ResponseEntity.ok().build();
     }
@@ -74,7 +74,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/hospitals/{id}")
-    public ResponseEntity<Void> deleteHospital(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteHospital(@PathVariable String id) {
         adminService.deleteHospital(id);
         return ResponseEntity.ok().build();
     }
@@ -90,7 +90,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/doctors/{id}")
-    public ResponseEntity<Void> deleteDoctor(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteDoctor(@PathVariable String id) {
         adminService.deleteDoctor(id);
         return ResponseEntity.ok().build();
     }
@@ -114,5 +114,15 @@ public class AdminController {
     public ResponseEntity<Void> deleteAppointment(@PathVariable Long id) {
         adminService.deleteAppointment(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/hospital-request/{id}")
+    public ResponseEntity<HospitalRegistrationRequest> getHospitalRequest(@PathVariable Long id) {
+        return ResponseEntity.ok(adminService.getHospitalRequest(id));
+    }
+
+    @GetMapping("/doctor-request/{id}")
+    public ResponseEntity<DoctorRegistrationRequest> getDoctorRequest(@PathVariable Long id) {
+        return ResponseEntity.ok(adminService.getDoctorRequest(id));
     }
 }

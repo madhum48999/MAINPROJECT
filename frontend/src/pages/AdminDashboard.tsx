@@ -116,6 +116,14 @@ const AdminDashboard = () => {
     fetchHospitals();
     fetchDoctors();
     fetchAppointments();
+
+    // Auto-refresh every 5 seconds
+    const interval = setInterval(() => {
+      fetchHospitalRequests();
+      fetchDoctorRequests();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchHospitalRequests = async () => {

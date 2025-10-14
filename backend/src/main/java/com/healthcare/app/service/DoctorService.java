@@ -31,7 +31,7 @@ public class DoctorService {
     @Autowired
     private com.healthcare.app.repository.PatientRepository patientRepository;
 
-    public Doctor getDoctorById(Long id) {
+    public Doctor getDoctorById(String id) {
         return doctorRepository.findById(id).orElseThrow(() -> new RuntimeException("Doctor not found"));
     }
 
@@ -51,7 +51,7 @@ public class DoctorService {
         return availabilityRepository.save(availability);
     }
 
-    public List<MedicalRecord> getRecordsByDoctor(Long doctorId) {
+    public List<MedicalRecord> getRecordsByDoctor(String doctorId) {
         return medicalRecordRepository.findAll().stream()
             .filter(r -> r.getDoctorId().equals(doctorId))
             .toList();

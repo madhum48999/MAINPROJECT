@@ -1,9 +1,63 @@
-# TODO: Add Functionalities to Doctor Dashboard
+# TODO: Modernize Healthcare Appointment Booking System
 
 ## Steps to Complete
 
-- [ ] Add tabs to DoctorDashboard.tsx for Manage Availability, Appointments, Medical Records.
-- [ ] Implement Manage Availability: Fetch and display current availability, add new availability slots, delete existing ones.
-- [ ] Implement Appointments: Fetch and display appointments, allow updating status (e.g., complete, cancel).
-- [ ] Implement Medical Records: Fetch and display medical records, allow creating new records.
-- [ ] Test the functionalities to ensure they work correctly.
+### 1. UI/UX Modernization
+- [ ] Implement consistent modern theme with dark mode support
+- [ ] Enhance responsiveness and mobile-friendliness across all pages
+- [ ] Add smooth animations and transitions using MUI components
+- [ ] Improve form validation with real-time feedback
+- [ ] Clean up RegisterPage.tsx (remove duplicate form code, keep stepper version)
+
+### 2. Complete Doctor Dashboard (from existing TODO.md)
+- [ ] Add tabs to DoctorDashboard.tsx for Manage Availability, Appointments, Medical Records
+- [ ] Implement Manage Availability: Fetch and display current availability, add new availability slots, delete existing ones
+- [ ] Implement Appointments: Fetch and display appointments, allow updating status (e.g., complete, cancel)
+- [ ] Implement Medical Records: Fetch and display medical records, allow creating new records
+
+### 3. Add Functional Search
+- [ ] Make HomePage search bar functional to search doctors, hospitals, specializations
+- [ ] Add backend endpoints for search functionality
+- [ ] Add filters and sorting options to search results
+- [ ] Implement search results page with pagination
+
+### 4. Enhance User Experience
+- [ ] Add loading states and skeleton screens throughout the app
+- [ ] Implement toast notifications for actions (success, error, info)
+- [ ] Add confirmation dialogs for critical actions (delete, cancel appointment)
+- [ ] Improve error handling with user-friendly messages
+- [ ] Add breadcrumbs and navigation improvements
+
+### 5. Increase Versatility
+- [ ] Add patient medical history view in PatientDashboard
+- [ ] Implement appointment reminders and notifications (backend + frontend)
+- [ ] Add hospital/doctor profiles with ratings/reviews system
+- [ ] Enable file uploads for medical documents (prescriptions, reports)
+- [ ] Add appointment rescheduling functionality
+
+### 6. Code Quality Improvements
+- [ ] Remove duplicate code across components
+- [ ] Implement proper state management (Context API for auth/user state)
+- [ ] Add TypeScript interfaces for all data models
+- [ ] Refactor components for reusability (create shared components)
+- [ ] Add proper error boundaries
+
+### 7. Backend Enhancements
+- [ ] Add more RESTful endpoints for new features (search, ratings, file uploads)
+- [ ] Implement pagination and filtering for lists (appointments, medical records)
+- [ ] Add email/SMS notifications service integration
+- [ ] Improve security with rate limiting and enhanced input validation
+- [ ] Add audit logging for critical operations
+
+### 8. Dependency Updates and Testing
+- [ ] Update frontend dependencies to latest stable versions
+- [ ] Update backend dependencies in pom.xml
+- [ ] Add unit tests for new components and services
+- [ ] Add integration tests for API endpoints
+- [ ] Update documentation (README.md, API docs)
+
+### 9. Deployment and CI/CD
+- [ ] Add Docker optimizations for production
+- [ ] Consider adding CI/CD pipeline (GitHub Actions)
+- [ ] Add environment-specific configurations
+- [ ] Performance optimizations (lazy loading, code splitting)

@@ -50,6 +50,7 @@ public class AdminService {
             hospitalRequestRepository.save(request);
 
             Hospital hospital = new Hospital();
+            hospital.setHid(generateNextHospitalId());
             hospital.setHospitalName(request.getHospitalName());
             hospital.setEmail(request.getEmail());
             // Set a default password or generate one
@@ -60,6 +61,14 @@ public class AdminService {
         throw new RuntimeException("Request not found");
     }
 
+    private String generateNextHospitalId() {
+        Long maxId = hospitalRepository.findMaxId();
+        if (maxId == null) {
+            return "H001";
+        }
+        return String.format("H%03d", maxId + 1);
+    }
+
     public Doctor approveDoctor(Long requestId) {
         var requestOpt = doctorRequestRepository.findById(requestId);
         if (requestOpt.isPresent()) {
@@ -68,6 +77,7 @@ public class AdminService {
             doctorRequestRepository.save(request);
 
             Doctor doctor = new Doctor();
+            doctor.setDid(generateNextDoctorId());
             doctor.setDoctorName(request.getDoctorName());
             doctor.setEmail(request.getEmail());
             doctor.setSpecialization(request.getSpecialization());
@@ -77,6 +87,14 @@ public class AdminService {
             return doctorRepository.save(doctor);
         }
         throw new RuntimeException("Request not found");
+    }
+
+    private String generateNextDoctorId() {
+        Long maxId = doctorRepository.findMaxId();
+        if (maxId == null) {
+            return "D001";
+        }
+        return String.format("D%03d", maxId + 1);
     }
 
     public void rejectHospital(Long requestId) {
@@ -106,12 +124,21 @@ public class AdminService {
             throw new RuntimeException("Email already registered");
         }
         patient.setRole("USER");
+        patient.setPid(generateNextPatientId());
         patient.setPatientId(java.util.UUID.randomUUID().toString());
         patient.setPassword(passwordEncoder.encode(patient.getPassword()));
         return patientRepository.save(patient);
     }
 
-    public void deletePatient(Long id) {
+    private String generateNextPatientId() {
+        Long maxId = patientRepository.findMaxId();
+        if (maxId == null) {
+            return "P001";
+        }
+        return String.format("P%03d", maxId + 1);
+    }
+
+    public void deletePatient(String id) {
         patientRepository.deleteById(id);
     }
 
@@ -128,7 +155,7 @@ public class AdminService {
         return hospitalRepository.save(hospital);
     }
 
-    public void deleteHospital(Long id) {
+    public void deleteHospital(String id) {
         hospitalRepository.deleteById(id);
     }
 
@@ -146,7 +173,7 @@ public class AdminService {
         return doctorRepository.save(doctor);
     }
 
-    public void deleteDoctor(Long id) {
+    public void deleteDoctor(String id) {
         doctorRepository.deleteById(id);
     }
 
@@ -174,5 +201,13 @@ public class AdminService {
 
     public void deleteAppointment(Long id) {
         appointmentRepository.deleteById(id);
+    }
+
+    public HospitalRegistrationRequest getHospitalRequest(Long id) {
+        return hospitalRequestRepository.findById(id).orElseThrow(() -> new RuntimeException("Request not found"));
+    }
+
+    public DoctorRegistrationRequest getDoctorRequest(Long id) {
+        return doctorRequestRepository.findById(id).orElseThrow(() -> new RuntimeException("Request not found"));
     }
 }

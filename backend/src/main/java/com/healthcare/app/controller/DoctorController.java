@@ -49,7 +49,7 @@ public class DoctorController {
     }
 
     @GetMapping("/records/{doctorId}")
-    public ResponseEntity<List<MedicalRecord>> getRecords(@PathVariable Long doctorId) {
+    public ResponseEntity<List<MedicalRecord>> getRecords(@PathVariable String doctorId) {
         return ResponseEntity.ok(doctorService.getRecordsByDoctor(doctorId));
     }
 

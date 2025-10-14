@@ -26,7 +26,7 @@ public class HospitalController {
     }
 
     @GetMapping("/records/{hospitalId}")
-    public ResponseEntity<List<MedicalRecord>> getRecords(@PathVariable Long hospitalId) {
+    public ResponseEntity<List<MedicalRecord>> getRecords(@PathVariable String hospitalId) {
         return ResponseEntity.ok(hospitalService.getRecordsByHospital(hospitalId));
     }
 

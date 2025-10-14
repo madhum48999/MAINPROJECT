@@ -8,13 +8,13 @@ import lombok.Data;
 public class DoctorRegistrationRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; // keep numeric ID for request tracking
 
     private String doctorName;
 
     private String specialization;
 
-    private Long hospitalId;
+    private String hospitalId; // String for consistency
 
     @Column(unique = true)
     private String email;

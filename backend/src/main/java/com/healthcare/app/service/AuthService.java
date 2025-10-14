@@ -46,29 +46,20 @@ public class AuthService {
     @Autowired
     private EmailService emailService;
 
-    public Hospital registerHospital(HospitalRegistrationRequest request) {
-        Hospital hospital = new Hospital();
-        hospital.setHospitalName(request.getHospitalName());
-        hospital.setEmail(request.getEmail());
-        hospital.setPassword(passwordEncoder.encode(request.getPassword()));
-        hospital.setAddress(request.getAddress());
-        hospital.setContact(request.getPhone());
-        hospital.setRole("HOSPITAL");
-        return hospitalRepository.save(hospital);
-    }
-
-    public Doctor registerDoctor(DoctorRegistrationRequest request) {
-        if (doctorRepository.findByEmail(request.getEmail()).isPresent()) {
+    public HospitalRegistrationRequest registerHospital(HospitalRegistrationRequest request) {
+        if (hospitalRequestRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email already registered");
         }
-        Doctor doctor = new Doctor();
-        doctor.setDoctorName(request.getDoctorName());
-        doctor.setEmail(request.getEmail());
-        doctor.setPassword(passwordEncoder.encode(request.getPassword()));
-        doctor.setSpecialization(request.getSpecialization());
-        doctor.setHospitalId(request.getHospitalId());
-        doctor.setRole("DOCTOR");
-        return doctorRepository.save(doctor);
+        request.setPassword(passwordEncoder.encode(request.getPassword()));
+        return hospitalRequestRepository.save(request);
+    }
+
+    public DoctorRegistrationRequest registerDoctor(DoctorRegistrationRequest request) {
+        if (doctorRequestRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already registered");
+        }
+        request.setPassword(passwordEncoder.encode(request.getPassword()));
+        return doctorRequestRepository.save(request);
     }
 
     public Patient registerPatient(Patient patient) {
@@ -76,9 +67,34 @@ public class AuthService {
             throw new RuntimeException("Email already registered");
         }
         patient.setRole("USER");
+        patient.setPid(generateNextPatientId());
         patient.setPatientId(UUID.randomUUID().toString());
         patient.setPassword(passwordEncoder.encode(patient.getPassword()));
         return patientRepository.save(patient);
+    }
+
+    private String generateNextPatientId() {
+        Long maxId = patientRepository.findMaxId();
+        if (maxId == null) {
+            return "P001";
+        }
+        return String.format("P%03d", maxId + 1);
+    }
+
+    private String generateNextDoctorId() {
+        Long maxId = doctorRepository.findMaxId();
+        if (maxId == null) {
+            return "D001";
+        }
+        return String.format("D%03d", maxId + 1);
+    }
+
+    private String generateNextHospitalId() {
+        Long maxId = hospitalRepository.findMaxId();
+        if (maxId == null) {
+            return "H001";
+        }
+        return String.format("H%03d", maxId + 1);
     }
 
     public String login(String email, String password) {
@@ -96,7 +112,7 @@ public class AuthService {
         if (patientOpt.isPresent()) {
             Patient patient = patientOpt.get();
             if (passwordEncoder.matches(password, patient.getPassword())) {
-                return jwtUtil.generateToken(patient.getPatientId(), patient.getRole());
+                return jwtUtil.generateToken(patient.getPid(), patient.getRole());
             }
         }
 
@@ -105,7 +121,7 @@ public class AuthService {
         if (hospitalOpt.isPresent()) {
             Hospital hospital = hospitalOpt.get();
             if (passwordEncoder.matches(password, hospital.getPassword())) {
-                return jwtUtil.generateToken(hospital.getId().toString(), hospital.getRole());
+                return jwtUtil.generateToken(hospital.getHid(), hospital.getRole());
             }
         }
 
@@ -114,7 +130,7 @@ public class AuthService {
         if (doctorOpt.isPresent()) {
             Doctor doctor = doctorOpt.get();
             if (passwordEncoder.matches(password, doctor.getPassword())) {
-                return jwtUtil.generateToken(doctor.getId().toString(), doctor.getRole());
+                return jwtUtil.generateToken(doctor.getDid(), doctor.getRole());
             }
         }
 

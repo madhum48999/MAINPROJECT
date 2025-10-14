@@ -23,7 +23,7 @@ public class HospitalService {
     @Autowired
     private MedicalRecordRepository medicalRecordRepository;
 
-    public Hospital getHospitalById(Long id) {
+    public Hospital getHospitalById(String id) {
         return hospitalRepository.findById(id).orElseThrow(() -> new RuntimeException("Hospital not found"));
     }
 
@@ -31,7 +31,7 @@ public class HospitalService {
         return appointmentRepository.findByHospitalId(hospitalId);
     }
 
-    public List<MedicalRecord> getRecordsByHospital(Long hospitalId) {
+    public List<MedicalRecord> getRecordsByHospital(String hospitalId) {
         return medicalRecordRepository.findAll().stream()
             .filter(r -> r.getHospitalId().equals(hospitalId))
             .toList();

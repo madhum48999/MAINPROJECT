@@ -7,8 +7,7 @@ import lombok.Data;
 @Data
 public class Doctor {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String did;
 
     private String doctorName;
 
@@ -19,7 +18,7 @@ public class Doctor {
 
     private String specialization;
 
-    private Long hospitalId; // nullable for independent doctors
+    private String hospitalId; // changed to String (consistent with Hospital.hid)
 
     private String role = "DOCTOR";
 }
