@@ -46,6 +46,46 @@ public class AuthService {
     @Autowired
     private EmailService emailService;
 
+    public Object register(RegistrationRequest request) {
+        String role = request.getRole().toUpperCase();
+
+        switch (role) {
+            case "USER":
+                Patient patient = new Patient();
+                patient.setName(request.getName());
+                patient.setEmail(request.getEmail());
+                patient.setPassword(request.getPassword());
+                patient.setPhone(request.getPhone());
+                patient.setDateOfBirth(request.getDateOfBirth());
+                patient.setGender(request.getGender());
+                patient.setWeight(Double.parseDouble(request.getWeight()));
+                return registerPatient(patient);
+            case "DOCTOR":
+                DoctorRegistrationRequest doctorRequest = new DoctorRegistrationRequest();
+                doctorRequest.setName(request.getName());
+                doctorRequest.setEmail(request.getEmail());
+                doctorRequest.setPassword(request.getPassword());
+                doctorRequest.setPhone(request.getPhone());
+                doctorRequest.setSpecialization(request.getSpecialization());
+                doctorRequest.setLicenseNumber(request.getLicenseNumber());
+                return registerDoctor(doctorRequest);
+            case "HOSPITAL":
+                HospitalRegistrationRequest hospitalRequest = new HospitalRegistrationRequest();
+                hospitalRequest.setName(request.getName());
+                hospitalRequest.setEmail(request.getEmail());
+                hospitalRequest.setPassword(request.getPassword());
+                hospitalRequest.setPhone(request.getPhone());
+                hospitalRequest.setHospitalName(request.getHospitalName());
+                hospitalRequest.setAddress(request.getAddress());
+                hospitalRequest.setCity(request.getCity());
+                hospitalRequest.setState(request.getState());
+                hospitalRequest.setZipCode(request.getZipCode());
+                return registerHospital(hospitalRequest);
+            default:
+                throw new RuntimeException("Invalid role");
+        }
+    }
+
     public HospitalRegistrationRequest registerHospital(HospitalRegistrationRequest request) {
         if (hospitalRequestRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email already registered");

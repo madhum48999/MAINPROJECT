@@ -10,9 +10,13 @@ public class DoctorRegistrationRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // keep numeric ID for request tracking
 
-    private String doctorName;
+    private String name;
 
     private String specialization;
+
+    private String phone;
+
+    private String licenseNumber;
 
     private String hospitalId; // String for consistency
 

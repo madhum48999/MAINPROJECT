@@ -3,17 +3,17 @@
 ## Steps to Complete
 
 ### 1. UI/UX Modernization
-- [ ] Implement consistent modern theme with dark mode support
-- [ ] Enhance responsiveness and mobile-friendliness across all pages
-- [ ] Add smooth animations and transitions using MUI components
-- [ ] Improve form validation with real-time feedback
-- [ ] Clean up RegisterPage.tsx (remove duplicate form code, keep stepper version)
+- [x] Implement consistent modern theme with dark mode support
+- [x] Enhance responsiveness and mobile-friendliness across all pages
+- [x] Add smooth animations and transitions using MUI components
+- [x] Improve form validation with real-time feedback
+- [x] Clean up RegisterPage.tsx (remove duplicate form code, keep stepper version)
 
 ### 2. Complete Doctor Dashboard (from existing TODO.md)
-- [ ] Add tabs to DoctorDashboard.tsx for Manage Availability, Appointments, Medical Records
-- [ ] Implement Manage Availability: Fetch and display current availability, add new availability slots, delete existing ones
-- [ ] Implement Appointments: Fetch and display appointments, allow updating status (e.g., complete, cancel)
-- [ ] Implement Medical Records: Fetch and display medical records, allow creating new records
+- [x] Add tabs to DoctorDashboard.tsx for Manage Availability, Appointments, Medical Records
+- [x] Implement Manage Availability: Fetch and display current availability, add new availability slots, delete existing ones
+- [x] Implement Appointments: Fetch and display appointments, allow updating status (e.g., complete, cancel)
+- [x] Implement Medical Records: Fetch and display medical records, allow creating new records
 
 ### 3. Add Functional Search
 - [ ] Make HomePage search bar functional to search doctors, hospitals, specializations

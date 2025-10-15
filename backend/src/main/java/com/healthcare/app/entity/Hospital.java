@@ -9,6 +9,8 @@ public class Hospital {
     @Id
     private String hid;
 
+    private String name;
+
     private String hospitalName;
 
     @Column(unique = true)
@@ -18,7 +20,17 @@ public class Hospital {
 
     private String address;
 
+    private String city;
+
+    private String state;
+
+    private String zipCode;
+
+    private String phone;
+
     private String contact;
 
     private String role = "HOSPITAL";
+
+    private String status = "ACTIVE";
 }

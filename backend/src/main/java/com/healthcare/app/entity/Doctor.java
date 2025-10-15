@@ -9,7 +9,11 @@ public class Doctor {
     @Id
     private String did;
 
-    private String doctorName;
+    private String name;
+
+    private String phone;
+
+    private String licenseNumber;
 
     @Column(unique = true)
     private String email;
@@ -21,4 +25,6 @@ public class Doctor {
     private String hospitalId; // changed to String (consistent with Hospital.hid)
 
     private String role = "DOCTOR";
+
+    private String status = "ACTIVE";
 }

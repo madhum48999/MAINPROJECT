@@ -22,6 +22,11 @@ public class AuthController {
     @Autowired
     private DoctorRegistrationRequestRepository doctorRequestRepository;
 
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegistrationRequest request) {
+        return ResponseEntity.ok(authService.register(request));
+    }
+
     @PostMapping("/register/patient")
     public ResponseEntity<Patient> registerPatient(@RequestBody Patient patient) {
         return ResponseEntity.ok(authService.registerPatient(patient));

@@ -51,7 +51,13 @@ public class AdminService {
 
             Hospital hospital = new Hospital();
             hospital.setHid(generateNextHospitalId());
+            hospital.setName(request.getName());
             hospital.setHospitalName(request.getHospitalName());
+            hospital.setAddress(request.getAddress());
+            hospital.setCity(request.getCity());
+            hospital.setState(request.getState());
+            hospital.setZipCode(request.getZipCode());
+            hospital.setPhone(request.getPhone());
             hospital.setEmail(request.getEmail());
             // Set a default password or generate one
             hospital.setPassword(passwordEncoder.encode("defaultPassword"));
@@ -78,7 +84,9 @@ public class AdminService {
 
             Doctor doctor = new Doctor();
             doctor.setDid(generateNextDoctorId());
-            doctor.setDoctorName(request.getDoctorName());
+            doctor.setName(request.getName());
+            doctor.setPhone(request.getPhone());
+            doctor.setLicenseNumber(request.getLicenseNumber());
             doctor.setEmail(request.getEmail());
             doctor.setSpecialization(request.getSpecialization());
             // Set a default password or generate one

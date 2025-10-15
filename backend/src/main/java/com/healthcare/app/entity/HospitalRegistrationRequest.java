@@ -10,12 +10,20 @@ public class HospitalRegistrationRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
+
     private String hospitalName;
 
     @Column(unique = true)
     private String email;
 
     private String address;
+
+    private String city;
+
+    private String state;
+
+    private String zipCode;
 
     private String phone;
 

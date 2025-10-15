@@ -82,7 +82,7 @@ public class DataInitializer {
 
             for (String[] data : doctorsData) {
                 Doctor doctor = new Doctor();
-                doctor.setDoctorName(data[0]);
+                doctor.setName(data[0]);
                 doctor.setEmail(data[1]);
                 doctor.setPassword(passwordEncoder.encode("password"));
                 doctor.setSpecialization(data[2]);
