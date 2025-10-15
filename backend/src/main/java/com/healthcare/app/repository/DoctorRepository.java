@@ -10,6 +10,6 @@ import java.util.Optional;
 public interface DoctorRepository extends JpaRepository<Doctor, String> {
     Optional<Doctor> findByEmail(String email);
     List<Doctor> findBySpecialization(String specialization);
-    @Query("SELECT MAX(CAST(SUBSTRING(d.did, 2) AS long)) FROM Doctor d")
+    @Query("SELECT MAX(CAST(SUBSTRING(d.did, 2) AS int)) FROM Doctor d")
     Long findMaxId();
 }

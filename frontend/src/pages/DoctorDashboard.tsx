@@ -30,6 +30,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 import { useNavigate } from 'react-router-dom';
+import ConfirmationDialog from '../components/ConfirmationDialog';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -81,6 +82,14 @@ const DoctorDashboard: React.FC = () => {
 
   // For patient profile
   const [searchPatientId, setSearchPatientId] = useState('');
+
+  // Confirmation dialog state
+  const [confirmationDialog, setConfirmationDialog] = useState({
+    open: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+  });
 
   const logout = () => {
     localStorage.removeItem('token');
@@ -179,6 +188,27 @@ const DoctorDashboard: React.FC = () => {
       setSelectedTime('');
     } catch (error: any) {
       const errorMessage = error.response?.data || 'Failed to add availability';
+      setSnackbar({
+        open: true,
+        message: errorMessage,
+        severity: 'error',
+      });
+    }
+  };
+
+  const deleteAvailability = async (availabilityId: number) => {
+    try {
+      await axios.delete(`http://localhost:8080/api/doctor/availability/${availabilityId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setSnackbar({
+        open: true,
+        message: 'Availability deleted successfully',
+        severity: 'success',
+      });
+      fetchAvailabilities();
+    } catch (error: any) {
+      const errorMessage = error.response?.data || 'Failed to delete availability';
       setSnackbar({
         open: true,
         message: errorMessage,
@@ -313,6 +343,7 @@ const DoctorDashboard: React.FC = () => {
                       <TableRow>
                         <TableCell>Date</TableCell>
                         <TableCell>Time</TableCell>
+                        <TableCell>Actions</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -320,6 +351,26 @@ const DoctorDashboard: React.FC = () => {
                         <TableRow key={avail.id}>
                           <TableCell>{avail.date}</TableCell>
                           <TableCell>{avail.time}</TableCell>
+                          <TableCell>
+                            <Button
+                              variant="outlined"
+                              color="error"
+                              size="small"
+                              onClick={() => {
+                                setConfirmationDialog({
+                                  open: true,
+                                  title: 'Delete Availability',
+                                  message: `Are you sure you want to delete the availability slot on ${avail.date} at ${avail.time}?`,
+                                  onConfirm: () => {
+                                    deleteAvailability(avail.id);
+                                    setConfirmationDialog({ open: false, title: '', message: '', onConfirm: () => {} });
+                                  },
+                                });
+                              }}
+                            >
+                              Delete
+                            </Button>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -384,7 +435,21 @@ const DoctorDashboard: React.FC = () => {
                             <FormControl size="small">
                               <Select
                                 value=""
-                                onChange={(e) => updateAppointmentStatus(appt.id, e.target.value)}
+                                onChange={(e) => {
+                                  if ((e.target.value as string) === 'CANCELLED') {
+                                    setConfirmationDialog({
+                                      open: true,
+                                      title: 'Cancel Appointment',
+                                      message: `Are you sure you want to cancel the appointment with ${appt.patientName} on ${appt.dateTime}?`,
+                                      onConfirm: () => {
+                                        updateAppointmentStatus(appt.id, 'CANCELLED');
+                                        setConfirmationDialog({ open: false, title: '', message: '', onConfirm: () => {} });
+                                      },
+                                    });
+                                  } else {
+                                    updateAppointmentStatus(appt.id, e.target.value as string);
+                                  }
+                                }}
                               >
                                 <MenuItem value="COMPLETED">Mark Completed</MenuItem>
                                 <MenuItem value="CANCELLED">Cancel</MenuItem>
@@ -542,6 +607,14 @@ const DoctorDashboard: React.FC = () => {
             {snackbar.message}
           </Alert>
         </Snackbar>
+
+        <ConfirmationDialog
+          open={confirmationDialog.open}
+          title={confirmationDialog.title}
+          message={confirmationDialog.message}
+          onConfirm={confirmationDialog.onConfirm}
+          onCancel={() => setConfirmationDialog({ open: false, title: '', message: '', onConfirm: () => {} })}
+        />
       </>
     </LocalizationProvider>
   );

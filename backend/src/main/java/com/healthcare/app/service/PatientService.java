@@ -41,6 +41,9 @@ public class PatientService {
     private ReminderService reminderService;
 
     @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
     private JwtUtil jwtUtil;
 
     public Patient getPatientById(String patientId) {
@@ -58,7 +61,7 @@ public class PatientService {
     }
 
     public List<MedicalRecord> getMedicalHistory(String patientId) {
-        return medicalRecordRepository.findByPatientId(patientId);
+        return medicalRecordRepository.findByPatientIdOrderByCreatedAtDesc(patientId);
     }
 
     public List<String> getPrescriptions(String patientId) {
@@ -77,6 +80,10 @@ public class PatientService {
 
     public List<Reminder> getReminders(String patientId) {
         return reminderService.getRemindersByPatient(patientId);
+    }
+
+    public List<com.healthcare.app.entity.Notification> getNotifications(String patientId) {
+        return notificationService.getNotificationsByPatient(patientId);
     }
 
     public List<Doctor> getAllDoctors() {

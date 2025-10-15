@@ -52,6 +52,13 @@ public class DataInitializer {
             patient.setEmail("patient@example.com");
             patient.setPassword(passwordEncoder.encode("password"));
             patient.setRole("PATIENT");
+            patient.setPhone("123-456-7890");
+            patient.setFirstName("John");
+            patient.setLastName("Doe");
+            patient.setAge(30);
+            patient.setWeight(70.5);
+            patient.setGender("Male");
+            patient.setDateOfBirth("1994-01-01");
             patientRepository.save(patient);
         }
 
@@ -80,7 +87,8 @@ public class DataInitializer {
                 {"Dr. Manoj", "manoj@example.com", "Radiology"}
             };
 
-            for (String[] data : doctorsData) {
+            for (int i = 0; i < doctorsData.length; i++) {
+                String[] data = doctorsData[i];
                 Doctor doctor = new Doctor();
                 doctor.setName(data[0]);
                 doctor.setEmail(data[1]);
@@ -99,6 +107,8 @@ public class DataInitializer {
             hospital.setEmail("hospital@gmail.com");
             hospital.setPassword(passwordEncoder.encode("password"));
             hospital.setAddress("456 Oak Ave");
+            hospital.setCity("New York");
+            hospital.setState("NY");
             hospital.setContact("987-654-3210");
             hospital.setRole("HOSPITAL");
             hospitalRepository.save(hospital);

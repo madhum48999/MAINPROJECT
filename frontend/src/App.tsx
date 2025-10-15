@@ -1,11 +1,16 @@
 import React, { useState, useMemo } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import { ThemeProvider, createTheme, CssBaseline, IconButton, Box } from '@mui/material/styles';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { CssBaseline, IconButton, Box } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import ErrorBoundary from './components/ErrorBoundary';
+import Breadcrumb from './components/Breadcrumb';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -18,6 +23,7 @@ import ChangePasswordPage from './pages/ChangePasswordPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import SearchResultsPage from './pages/SearchResultsPage';
+import DoctorProfilePage from './pages/DoctorProfilePage';
 
 interface ProtectedRouteProps {
   element: React.ReactElement;
@@ -98,32 +104,48 @@ const App: React.FC = () => {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box sx={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}>
-        <IconButton onClick={toggleDarkMode} color="inherit">
-          {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
-        </IconButton>
-      </Box>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <Router>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/approval-pending" element={<ApprovalPendingPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/change-password" element={<ProtectedRoute element={<ChangePasswordPage />} />} />
-            <Route path="/patient" element={<ProtectedRoute element={<PatientDashboard />} requiredRole="USER" />} />
-            <Route path="/admin" element={<ProtectedRoute element={<AdminDashboard />} requiredRole="ADMIN" />} />
-            <Route path="/hospital" element={<ProtectedRoute element={<HospitalDashboard />} requiredRole="HOSPITAL" />} />
-            <Route path="/doctor" element={<ProtectedRoute element={<DoctorDashboard />} requiredRole="DOCTOR" />} />
-            <Route path="/search" element={<SearchResultsPage />} />
-          </Routes>
-        </Router>
-      </LocalizationProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme={darkMode ? 'dark' : 'light'}
+        />
+        <Box sx={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}>
+          <IconButton onClick={toggleDarkMode} color="inherit">
+            {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+          </IconButton>
+        </Box>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <Router>
+            <Breadcrumb />
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/approval-pending" element={<ApprovalPendingPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
+              <Route path="/change-password" element={<ProtectedRoute element={<ChangePasswordPage />} />} />
+              <Route path="/patient" element={<ProtectedRoute element={<PatientDashboard />} requiredRole="USER" />} />
+              <Route path="/admin" element={<ProtectedRoute element={<AdminDashboard />} requiredRole="ADMIN" />} />
+              <Route path="/hospital" element={<ProtectedRoute element={<HospitalDashboard />} requiredRole="HOSPITAL" />} />
+              <Route path="/doctor" element={<ProtectedRoute element={<DoctorDashboard />} requiredRole="DOCTOR" />} />
+              <Route path="/search" element={<SearchResultsPage />} />
+              <Route path="/doctor-profile/:doctorId" element={<DoctorProfilePage />} />
+            </Routes>
+          </Router>
+        </LocalizationProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 };
 

@@ -31,6 +31,14 @@ import {
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 
+interface Notification {
+  id: number;
+  type: string;
+  message: string;
+  createdAt: string;
+  isRead: boolean;
+}
+
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
@@ -86,6 +94,9 @@ const PatientDashboard: React.FC = () => {
 
   const [reminders, setReminders] = useState<any[]>([]);
   const [loadingReminders, setLoadingReminders] = useState(false);
+
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [loadingNotifications, setLoadingNotifications] = useState(false);
 
   const [profile, setProfile] = useState<any>({});
   const [loadingProfile, setLoadingProfile] = useState(false);
@@ -286,6 +297,27 @@ const PatientDashboard: React.FC = () => {
     }
   }, [patientId, token]);
 
+  const fetchNotifications = useCallback(async () => {
+    setLoadingNotifications(true);
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/patient/notifications/${patientId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setNotifications(response.data);
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        message: "Failed to load notifications",
+        severity: "error",
+      });
+    } finally {
+      setLoadingNotifications(false);
+    }
+  }, [patientId, token]);
+
   const fetchPatientProfile = useCallback(async () => {
     setLoadingProfile(true);
     try {
@@ -333,6 +365,7 @@ const PatientDashboard: React.FC = () => {
     fetchPrescriptions();
     fetchLabResults();
     fetchReminders();
+    fetchNotifications();
     fetchPatientProfile();
   }, [
     fetchDoctors,
@@ -341,6 +374,7 @@ const PatientDashboard: React.FC = () => {
     fetchPrescriptions,
     fetchLabResults,
     fetchReminders,
+    fetchNotifications,
     fetchPatientProfile,
   ]);
 
@@ -368,6 +402,7 @@ const PatientDashboard: React.FC = () => {
           <Tab label="Prescriptions" />
           <Tab label="Lab Results" />
           <Tab label="Reminders" />
+          <Tab label="Notifications" />
           <Tab label="Patient Profile" />
         </Tabs>
 
@@ -496,6 +531,10 @@ const PatientDashboard: React.FC = () => {
             </Typography>
             {loadingMedicalHistory ? (
               <CircularProgress />
+            ) : medicalHistory.length === 0 ? (
+              <Typography variant="body1" color="text.secondary">
+                No medical records found. Your medical history will appear here once you have completed appointments and records have been added by your healthcare providers.
+              </Typography>
             ) : (
               <TableContainer component={Paper}>
                 <Table>
@@ -504,16 +543,18 @@ const PatientDashboard: React.FC = () => {
                       <TableCell>Doctor</TableCell>
                       <TableCell>Diagnosis</TableCell>
                       <TableCell>Treatment</TableCell>
-                      <TableCell>Date</TableCell>
+                      <TableCell>Visit Date</TableCell>
+                      <TableCell>Created</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {medicalHistory.map((record) => (
                       <TableRow key={record.id}>
-                        <TableCell>{record.doctorName}</TableCell>
-                        <TableCell>{record.diagnosis}</TableCell>
-                        <TableCell>{record.treatment}</TableCell>
-                        <TableCell>{record.createdAt}</TableCell>
+                        <TableCell>{record.doctorId || 'N/A'}</TableCell>
+                        <TableCell>{record.diagnosis || 'N/A'}</TableCell>
+                        <TableCell>{record.treatment || 'N/A'}</TableCell>
+                        <TableCell>{record.visitDate || 'N/A'}</TableCell>
+                        <TableCell>{record.createdAt ? dayjs(record.createdAt).format('MMM DD, YYYY hh:mm A') : 'N/A'}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -587,6 +628,37 @@ const PatientDashboard: React.FC = () => {
           </Paper>
         </TabPanel>
         <TabPanel value={tabValue} index={6}>
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Notifications
+            </Typography>
+            {loadingNotifications ? (
+              <CircularProgress />
+            ) : (
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Type</TableCell>
+                      <TableCell>Message</TableCell>
+                      <TableCell>Date</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {notifications.map((notification) => (
+                      <TableRow key={notification.id}>
+                        <TableCell>{notification.type}</TableCell>
+                        <TableCell>{notification.message}</TableCell>
+                        <TableCell>{notification.createdAt ? dayjs(notification.createdAt).format('MMM DD, YYYY hh:mm A') : 'N/A'}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
+          </Paper>
+        </TabPanel>
+        <TabPanel value={tabValue} index={7}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
               Patient Profile

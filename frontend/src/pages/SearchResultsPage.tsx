@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { showSuccessToast, showErrorToast } from '../utils/toast';
 import {
   Container,
   Typography,
@@ -19,6 +20,8 @@ import {
   Alert,
   Tabs,
   Tab,
+  SelectChangeEvent,
+  Skeleton,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import SearchIcon from '@mui/icons-material/Search';
@@ -27,7 +30,7 @@ import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import PersonIcon from '@mui/icons-material/Person';
 
 interface Doctor {
-  did: string;
+  did: number;
   name: string;
   email: string;
   specialization: string;
@@ -36,7 +39,7 @@ interface Doctor {
 }
 
 interface Hospital {
-  hid: string;
+  hid: number;
   name: string;
   hospitalName: string;
   email: string;
@@ -92,8 +95,10 @@ const SearchResultsPage: React.FC = () => {
       ]);
       setSpecializations(specRes.data);
       setCities(cityRes.data);
+      showSuccessToast('Filters loaded successfully');
     } catch (err) {
       console.error('Error fetching filters:', err);
+      showErrorToast('Failed to load filters');
     }
   };
 
@@ -156,8 +161,8 @@ const SearchResultsPage: React.FC = () => {
     setPage(value - 1);
   };
 
-  const renderDoctorCard = (doctor: Doctor) => (
-    <Grid item xs={12} sm={6} md={4} key={doctor.did}>
+  const renderDoctorCard = (doctor: Doctor): React.JSX.Element => (
+    <Grid size={{ xs: 12, sm: 6, md: 4 }} key={doctor.did}>
       <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
         <CardContent sx={{ flexGrow: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -184,7 +189,7 @@ const SearchResultsPage: React.FC = () => {
   );
 
   const renderHospitalCard = (hospital: Hospital) => (
-    <Grid item xs={12} sm={6} md={4} key={hospital.hid}>
+    <Grid size={{ xs: 12, sm: 6, md: 4 }} key={hospital.hid}>
       <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
         <CardContent sx={{ flexGrow: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
@@ -219,25 +224,25 @@ const SearchResultsPage: React.FC = () => {
       {/* Search Filters */}
       <Box sx={{ mb: 4, p: 3, bgcolor: 'background.paper', borderRadius: 2 }}>
         <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <TextField
               fullWidth
               label="Search"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuery(e.target.value)}
               InputProps={{
                 startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />,
               }}
             />
           </Grid>
           {activeTab === 0 ? (
-            <Grid item xs={12} md={3}>
+            <Grid size={{ xs: 12, md: 3 }}>
               <FormControl fullWidth>
                 <InputLabel>Specialization</InputLabel>
                 <Select
                   value={specialization}
                   label="Specialization"
-                  onChange={(e) => setSpecialization(e.target.value)}
+                  onChange={(e: SelectChangeEvent) => setSpecialization(e.target.value)}
                 >
                   <MenuItem value="">All Specializations</MenuItem>
                   {specializations.map((spec) => (
@@ -249,13 +254,13 @@ const SearchResultsPage: React.FC = () => {
               </FormControl>
             </Grid>
           ) : (
-            <Grid item xs={12} md={3}>
+            <Grid size={{ xs: 12, md: 3 }}>
               <FormControl fullWidth>
                 <InputLabel>City</InputLabel>
                 <Select
                   value={city}
                   label="City"
-                  onChange={(e) => setCity(e.target.value)}
+                  onChange={(e: SelectChangeEvent) => setCity(e.target.value)}
                 >
                   <MenuItem value="">All Cities</MenuItem>
                   {cities.map((c) => (
@@ -267,7 +272,7 @@ const SearchResultsPage: React.FC = () => {
               </FormControl>
             </Grid>
           )}
-          <Grid item xs={12} md={2}>
+          <Grid size={{ xs: 12, md: 2 }}>
             <Button
               fullWidth
               variant="contained"
@@ -279,7 +284,7 @@ const SearchResultsPage: React.FC = () => {
           </Grid>
         </Grid>
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Typography variant="body2" color="text.secondary">
               Search for doctors or hospitals by name, specialization, or location.
             </Typography>
@@ -303,8 +308,24 @@ const SearchResultsPage: React.FC = () => {
       )}
 
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <CircularProgress />
+        <Box sx={{ mt: 4 }}>
+          <Typography variant="h6" gutterBottom>
+            <Skeleton width={200} />
+          </Typography>
+          <Grid container spacing={3}>
+            {Array.from({ length: 6 }).map((_, index) => (
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
+                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  <CardContent sx={{ flexGrow: 1 }}>
+                    <Skeleton variant="text" width="60%" height={32} sx={{ mb: 1 }} />
+                    <Skeleton variant="rectangular" width="40%" height={24} sx={{ mb: 1 }} />
+                    <Skeleton variant="text" width="80%" sx={{ mb: 1 }} />
+                    <Skeleton variant="text" width="60%" />
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
         </Box>
       ) : (
         <>

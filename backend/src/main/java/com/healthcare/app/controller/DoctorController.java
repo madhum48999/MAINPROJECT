@@ -48,6 +48,12 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.setAvailability(availability));
     }
 
+    @DeleteMapping("/availability/{id}")
+    public ResponseEntity<Void> deleteAvailability(@PathVariable Long id) {
+        availabilityService.deleteAvailability(id);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/records/{doctorId}")
     public ResponseEntity<List<MedicalRecord>> getRecords(@PathVariable String doctorId) {
         return ResponseEntity.ok(doctorService.getRecordsByDoctor(doctorId));

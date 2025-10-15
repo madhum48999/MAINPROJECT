@@ -2,13 +2,17 @@ package com.healthcare.app.service;
 
 import com.healthcare.app.entity.Appointment;
 import com.healthcare.app.entity.Availability;
+import com.healthcare.app.entity.Patient;
+import com.healthcare.app.entity.Reminder;
 import com.healthcare.app.repository.AppointmentRepository;
 import com.healthcare.app.repository.AvailabilityRepository;
+import com.healthcare.app.repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AppointmentService {
@@ -18,6 +22,18 @@ public class AppointmentService {
 
     @Autowired
     private AvailabilityRepository availabilityRepository;
+
+    @Autowired
+    private PatientRepository patientRepository;
+
+    @Autowired
+    private ReminderService reminderService;
+
+    @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
+    private EmailService emailService;
 
     public Appointment bookAppointment(Appointment appointment) {
         // Check if doctor is available at the time
@@ -29,7 +45,65 @@ public class AppointmentService {
             throw new RuntimeException("Doctor not available at this time");
         }
         appointment.setStatus("BOOKED");
-        return appointmentRepository.save(appointment);
+
+        // Save the appointment
+        Appointment savedAppointment = appointmentRepository.save(appointment);
+
+        // Create reminder for the appointment
+        createAppointmentReminder(savedAppointment);
+
+        // Create notification for the appointment
+        createAppointmentNotification(savedAppointment);
+
+        // Send confirmation email
+        sendAppointmentConfirmation(savedAppointment);
+
+        return savedAppointment;
+    }
+
+    private void createAppointmentReminder(Appointment appointment) {
+        Reminder reminder = new Reminder();
+        reminder.setPatientId(appointment.getPatientId());
+        reminder.setType("appointment");
+        reminder.setMessage("You have an appointment scheduled for " + appointment.getDateTime().format(java.time.format.DateTimeFormatter.ofPattern("MMM dd, yyyy 'at' hh:mm a")));
+        reminder.setReminderDate(appointment.getDateTime().toLocalDate().minusDays(1)); // Reminder 1 day before
+        reminderService.saveReminder(reminder);
+    }
+
+    private void createAppointmentNotification(Appointment appointment) {
+        String message = "Your appointment has been confirmed for " + appointment.getDateTime().format(java.time.format.DateTimeFormatter.ofPattern("MMM dd, yyyy 'at' hh:mm a"));
+        notificationService.createAppointmentNotification(appointment.getPatientId(), message, "appointment_confirmed");
+    }
+
+    private void sendAppointmentConfirmation(Appointment appointment) {
+        Optional<Patient> patientOpt = patientRepository.findByPatientId(appointment.getPatientId());
+        if (patientOpt.isPresent()) {
+            Patient patient = patientOpt.get();
+            String subject = "Appointment Confirmation - Healthcare System";
+            String message = String.format(
+                "Dear %s,\n\n" +
+                "Your appointment has been successfully booked!\n\n" +
+                "Appointment Details:\n" +
+                "Date & Time: %s\n" +
+                "Doctor ID: %s\n" +
+                "Hospital ID: %s\n\n" +
+                "Please arrive 15 minutes early for your appointment.\n\n" +
+                "If you need to reschedule or cancel, please contact us.\n\n" +
+                "Best regards,\n" +
+                "Healthcare Appointment System",
+                patient.getName(),
+                appointment.getDateTime().format(java.time.format.DateTimeFormatter.ofPattern("MMMM dd, yyyy 'at' hh:mm a")),
+                appointment.getDoctorId(),
+                appointment.getHospitalId()
+            );
+
+            // For now, just log the email (as per EmailService implementation)
+            System.out.println("=== APPOINTMENT CONFIRMATION EMAIL ===");
+            System.out.println("To: " + patient.getEmail());
+            System.out.println("Subject: " + subject);
+            System.out.println("Message:\n" + message);
+            System.out.println("=====================================");
+        }
     }
 
     public List<Appointment> getAppointmentsByPatient(String patientId) {

@@ -6,6 +6,7 @@ import com.healthcare.app.entity.Doctor;
 import com.healthcare.app.entity.MedicalRecord;
 import com.healthcare.app.entity.Patient;
 import com.healthcare.app.entity.Reminder;
+import com.healthcare.app.entity.Notification;
 import com.healthcare.app.service.AppointmentService;
 import com.healthcare.app.service.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,11 @@ public class PatientController {
     @GetMapping("/reminders/{patientId}")
     public ResponseEntity<List<Reminder>> getReminders(@PathVariable String patientId) {
         return ResponseEntity.ok(patientService.getReminders(patientId));
+    }
+
+    @GetMapping("/notifications/{patientId}")
+    public ResponseEntity<List<Notification>> getNotifications(@PathVariable String patientId) {
+        return ResponseEntity.ok(patientService.getNotifications(patientId));
     }
 
     @GetMapping("/profile")

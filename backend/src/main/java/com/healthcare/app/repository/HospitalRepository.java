@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface HospitalRepository extends JpaRepository<Hospital, String> {
     Optional<Hospital> findByEmail(String email);
-    @Query("SELECT MAX(CAST(SUBSTRING(h.hid, 2) AS long)) FROM Hospital h")
+    @Query("SELECT MAX(CAST(SUBSTRING(h.hid, 2) AS int)) FROM Hospital h")
     Long findMaxId();
 }
