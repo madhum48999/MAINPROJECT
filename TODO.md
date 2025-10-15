@@ -3,7 +3,7 @@
 ## Steps to Complete
 
 ### 1. UI/UX Modernization
-- [x] Implement consistent modern theme with dark mode support
+- [x] Implement consistent modern theme with dark mode supports
 - [x] Enhance responsiveness and mobile-friendliness across all pages
 - [x] Add smooth animations and transitions using MUI components
 - [x] Improve form validation with real-time feedback
