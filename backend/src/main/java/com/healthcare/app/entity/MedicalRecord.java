@@ -23,6 +23,8 @@ public class MedicalRecord {
     private String treatment;
     private String prescription;
     private String report;
+    private String prescriptionFilePath;
+    private String reportFilePath;
 
     @PrePersist
     protected void onCreate() {

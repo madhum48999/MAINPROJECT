@@ -27,6 +27,8 @@ public class MedicalRecordService {
             MedicalRecord record = recordOpt.get();
             record.setPrescription(updatedRecord.getPrescription());
             record.setReport(updatedRecord.getReport());
+            record.setPrescriptionFilePath(updatedRecord.getPrescriptionFilePath());
+            record.setReportFilePath(updatedRecord.getReportFilePath());
             return medicalRecordRepository.save(record);
         }
         throw new RuntimeException("Record not found");

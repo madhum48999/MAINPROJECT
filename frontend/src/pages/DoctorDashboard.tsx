@@ -31,6 +31,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 import { useNavigate } from 'react-router-dom';
 import ConfirmationDialog from '../components/ConfirmationDialog';
+import FileUpload from '../components/FileUpload';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -79,6 +80,12 @@ const DoctorDashboard: React.FC = () => {
   const [recordPatientId, setRecordPatientId] = useState('');
   const [recordDiagnosis, setRecordDiagnosis] = useState('');
   const [recordTreatment, setRecordTreatment] = useState('');
+  const [recordPrescription, setRecordPrescription] = useState('');
+  const [recordReport, setRecordReport] = useState('');
+  const [prescriptionFilePath, setPrescriptionFilePath] = useState('');
+  const [prescriptionFileName, setPrescriptionFileName] = useState('');
+  const [reportFilePath, setReportFilePath] = useState('');
+  const [reportFileName, setReportFileName] = useState('');
 
   // For patient profile
   const [searchPatientId, setSearchPatientId] = useState('');
@@ -242,10 +249,14 @@ const DoctorDashboard: React.FC = () => {
     if (!recordPatientId || !recordDiagnosis || !recordTreatment) return;
     try {
       const record = {
-        doctorId: parseInt(doctorId),
-        patientId: parseInt(recordPatientId),
+        doctorId: doctorId,
+        patientId: recordPatientId,
         diagnosis: recordDiagnosis,
         treatment: recordTreatment,
+        prescription: recordPrescription,
+        report: recordReport,
+        prescriptionFilePath: prescriptionFilePath,
+        reportFilePath: reportFilePath,
       };
       await axios.post('http://localhost:8080/api/doctor/records', record, {
         headers: { Authorization: `Bearer ${token}` },
@@ -256,9 +267,16 @@ const DoctorDashboard: React.FC = () => {
         severity: 'success',
       });
       fetchRecords();
+      // Reset form
       setRecordPatientId('');
       setRecordDiagnosis('');
       setRecordTreatment('');
+      setRecordPrescription('');
+      setRecordReport('');
+      setPrescriptionFilePath('');
+      setPrescriptionFileName('');
+      setReportFilePath('');
+      setReportFileName('');
     } catch (error: any) {
       const errorMessage = error.response?.data || 'Failed to create record';
       setSnackbar({
@@ -513,13 +531,62 @@ const DoctorDashboard: React.FC = () => {
                     value={recordDiagnosis}
                     onChange={(e) => setRecordDiagnosis(e.target.value)}
                     fullWidth
+                    multiline
+                    rows={2}
                   />
                   <TextField
                     label="Treatment"
                     value={recordTreatment}
                     onChange={(e) => setRecordTreatment(e.target.value)}
                     fullWidth
+                    multiline
+                    rows={2}
                   />
+                  <TextField
+                    label="Prescription (optional)"
+                    value={recordPrescription}
+                    onChange={(e) => setRecordPrescription(e.target.value)}
+                    fullWidth
+                    multiline
+                    rows={2}
+                  />
+                  <TextField
+                    label="Report (optional)"
+                    value={recordReport}
+                    onChange={(e) => setRecordReport(e.target.value)}
+                    fullWidth
+                    multiline
+                    rows={2}
+                  />
+
+                  <FileUpload
+                    label="Prescription File"
+                    onFileUploaded={(filePath, fileName) => {
+                      setPrescriptionFilePath(filePath);
+                      setPrescriptionFileName(fileName);
+                    }}
+                    onFileRemoved={() => {
+                      setPrescriptionFilePath('');
+                      setPrescriptionFileName('');
+                    }}
+                    currentFilePath={prescriptionFilePath}
+                    currentFileName={prescriptionFileName}
+                  />
+
+                  <FileUpload
+                    label="Report File"
+                    onFileUploaded={(filePath, fileName) => {
+                      setReportFilePath(filePath);
+                      setReportFileName(fileName);
+                    }}
+                    onFileRemoved={() => {
+                      setReportFilePath('');
+                      setReportFileName('');
+                    }}
+                    currentFilePath={reportFilePath}
+                    currentFileName={reportFileName}
+                  />
+
                   <Button variant="contained" onClick={createRecord}>
                     Create Record
                   </Button>

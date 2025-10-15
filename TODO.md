@@ -31,7 +31,7 @@
 ### 5. Increase Versatility
 - [x] Add patient medical history view in PatientDashboard
 - [x] Implement appointment reminders and notifications (backend + frontend)
-- [ ] Add hospital/doctor profiles with ratings/reviews system
+- [x] Add hospital/doctor profiles with ratings/reviews system
 - [ ] Enable file uploads for medical documents (prescriptions, reports)
 - [ ] Add appointment rescheduling functionality
 

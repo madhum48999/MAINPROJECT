@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
@@ -16,23 +16,26 @@ import {
   DialogContent,
   DialogActions,
   Chip,
-  Divider,
   CircularProgress,
   Alert,
 } from '@mui/material';
 import { jwtDecode } from 'jwt-decode';
-import PersonIcon from '@mui/icons-material/Person';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import StarIcon from '@mui/icons-material/Star';
 import { showSuccessToast, showErrorToast } from '../utils/toast';
 
-interface Doctor {
-  did: string;
+interface Hospital {
+  hid: string;
   name: string;
+  hospitalName: string;
   email: string;
-  specialization: string;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
   phone: string;
-  hospitalId?: string;
-  licenseNumber: string;
+  contact: string;
 }
 
 interface Review {
@@ -50,10 +53,10 @@ interface RatingSummary {
   reviewCount: number;
 }
 
-const DoctorProfilePage: React.FC = () => {
-  const { doctorId } = useParams<{ doctorId: string }>();
+const HospitalProfilePage: React.FC = () => {
+  const { hospitalId } = useParams<{ hospitalId: string }>();
   const navigate = useNavigate();
-  const [doctor, setDoctor] = useState<Doctor | null>(null);
+  const [hospital, setHospital] = useState<Hospital | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [ratingSummary, setRatingSummary] = useState<RatingSummary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -61,26 +64,6 @@ const DoctorProfilePage: React.FC = () => {
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [newReview, setNewReview] = useState({ rating: 0, reviewText: '' });
   const [currentUser, setCurrentUser] = useState<any>(null);
-
-  const fetchDoctorProfile = useCallback(async () => {
-    try {
-      setLoading(true);
-      const [doctorRes, reviewsRes, ratingRes] = await Promise.all([
-        axios.get(`/api/doctors/${doctorId}`),
-        axios.get(`/api/reviews/entity/${doctorId}?entityType=DOCTOR`),
-        axios.get(`/api/reviews/rating/${doctorId}?entityType=DOCTOR`),
-      ]);
-
-      setDoctor(doctorRes.data);
-      setReviews(reviewsRes.data);
-      setRatingSummary(ratingRes.data);
-    } catch (err: any) {
-      setError('Failed to load doctor profile');
-      console.error('Error fetching doctor profile:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [doctorId]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -92,8 +75,28 @@ const DoctorProfilePage: React.FC = () => {
         console.error('Error decoding token:', error);
       }
     }
-    fetchDoctorProfile();
-  }, [doctorId, fetchDoctorProfile]);
+    fetchHospitalProfile();
+  }, [hospitalId]);
+
+  const fetchHospitalProfile = async () => {
+    try {
+      setLoading(true);
+      const [hospitalRes, reviewsRes, ratingRes] = await Promise.all([
+        axios.get(`/api/hospital/${hospitalId}`),
+        axios.get(`/api/reviews/entity/${hospitalId}?entityType=HOSPITAL`),
+        axios.get(`/api/reviews/rating/${hospitalId}?entityType=HOSPITAL`),
+      ]);
+
+      setHospital(hospitalRes.data);
+      setReviews(reviewsRes.data);
+      setRatingSummary(ratingRes.data);
+    } catch (err: any) {
+      setError('Failed to load hospital profile');
+      console.error('Error fetching hospital profile:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmitReview = async () => {
     if (!currentUser || newReview.rating === 0) {
@@ -104,8 +107,8 @@ const DoctorProfilePage: React.FC = () => {
     try {
       const reviewData = {
         reviewerId: currentUser.sub,
-        reviewedEntityId: doctorId,
-        reviewedEntityType: 'DOCTOR',
+        reviewedEntityId: hospitalId,
+        reviewedEntityType: 'HOSPITAL',
         rating: newReview.rating,
         reviewText: newReview.reviewText,
       };
@@ -114,7 +117,7 @@ const DoctorProfilePage: React.FC = () => {
       setReviewDialogOpen(false);
       setNewReview({ rating: 0, reviewText: '' });
       showSuccessToast('Review submitted successfully');
-      fetchDoctorProfile(); // Refresh reviews
+      fetchHospitalProfile(); // Refresh reviews
     } catch (err: any) {
       showErrorToast('Failed to submit review');
       console.error('Error submitting review:', err);
@@ -129,29 +132,29 @@ const DoctorProfilePage: React.FC = () => {
     );
   }
 
-  if (error || !doctor) {
+  if (error || !hospital) {
     return (
       <Container maxWidth="lg" sx={{ mt: 4 }}>
-        <Alert severity="error">{error || 'Doctor not found'}</Alert>
+        <Alert severity="error">{error || 'Hospital not found'}</Alert>
       </Container>
     );
   }
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      {/* Doctor Profile Header */}
+      {/* Hospital Profile Header */}
       <Card sx={{ mb: 4 }}>
         <CardContent>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
             <Avatar sx={{ width: 80, height: 80, mr: 3, bgcolor: 'primary.main' }}>
-              <PersonIcon sx={{ fontSize: 40 }} />
+              <LocalHospitalIcon sx={{ fontSize: 40 }} />
             </Avatar>
             <Box sx={{ flexGrow: 1 }}>
               <Typography variant="h4" component="h1" gutterBottom>
-                Dr. {doctor.name}
+                {hospital.hospitalName}
               </Typography>
               <Typography variant="h6" color="primary" gutterBottom>
-                {doctor.specialization}
+                {hospital.name}
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -161,77 +164,63 @@ const DoctorProfilePage: React.FC = () => {
                   </Typography>
                 </Box>
                 <Chip
-                  icon={<LocalHospitalIcon />}
-                  label={`License: ${doctor.licenseNumber}`}
+                  icon={<LocationOnIcon />}
+                  label={`${hospital.city}, ${hospital.state}`}
                   variant="outlined"
                 />
               </Box>
             </Box>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            {currentUser && (
               <Button
                 variant="contained"
-                color="primary"
-                onClick={() => navigate(`/book-appointment/${doctor.did}`)}
+                onClick={() => setReviewDialogOpen(true)}
+                startIcon={<StarIcon />}
               >
-                Book Appointment
+                Write Review
               </Button>
-              {currentUser && (
-                <Button
-                  variant="outlined"
-                  onClick={() => setReviewDialogOpen(true)}
-                >
-                  Write Review
-                </Button>
-              )}
-            </Box>
+            )}
           </Box>
 
-          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
-            <Box sx={{ flex: 1 }}>
-              <Typography variant="body1" gutterBottom>
-                <strong>Email:</strong> {doctor.email}
-              </Typography>
-              <Typography variant="body1" gutterBottom>
-                <strong>Phone:</strong> {doctor.phone}
-              </Typography>
-            </Box>
-            <Box sx={{ flex: 1 }}>
-              <Typography variant="body1" gutterBottom>
-                <strong>Hospital ID:</strong> {doctor.hospitalId || 'Not specified'}
-              </Typography>
-            </Box>
+          {/* Hospital Details */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Typography variant="body1" gutterBottom>
+              <strong>Email:</strong> {hospital.email}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              <strong>Phone:</strong> {hospital.phone}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              <strong>Address:</strong> {hospital.address}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              <strong>ZIP Code:</strong> {hospital.zipCode}
+            </Typography>
           </Box>
         </CardContent>
       </Card>
 
       {/* Reviews Section */}
-      <Card>
+      <Card sx={{ mb: 4 }}>
         <CardContent>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-            <Typography variant="h5" component="h2">
-              Reviews ({reviews.length})
-            </Typography>
-          </Box>
-
+          <Typography variant="h5" component="h2" gutterBottom>
+            Reviews
+          </Typography>
           {reviews.length === 0 ? (
             <Typography variant="body2" color="text.secondary">
-              No reviews yet. Be the first to review this doctor!
+              No reviews yet. Be the first to review this hospital!
             </Typography>
           ) : (
-            <Box sx={{ maxHeight: 600, overflowY: 'auto' }}>
-              {reviews.map((review, index) => (
-                <Box key={review.id} sx={{ mb: index < reviews.length - 1 ? 3 : 0 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <Rating value={review.rating} readOnly size="small" />
-                    <Typography variant="body2" sx={{ ml: 1 }}>
-                      {new Date(review.createdAt).toLocaleDateString()}
-                    </Typography>
-                  </Box>
-                  <Typography variant="body1">{review.reviewText}</Typography>
-                  {index < reviews.length - 1 && <Divider sx={{ mt: 2 }} />}
+            reviews.map((review) => (
+              <Box key={review.id} sx={{ mb: 3, pb: 2, borderBottom: '1px solid #e0e0e0' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <Rating value={review.rating} readOnly size="small" />
+                  <Typography variant="body2" sx={{ ml: 1 }}>
+                    {new Date(review.createdAt).toLocaleDateString()}
+                  </Typography>
                 </Box>
-              ))}
-            </Box>
+                <Typography variant="body1">{review.reviewText}</Typography>
+              </Box>
+            ))
           )}
         </CardContent>
       </Card>
@@ -241,13 +230,13 @@ const DoctorProfilePage: React.FC = () => {
         <DialogTitle>Write a Review</DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 2 }}>
-            <Typography component="legend" gutterBottom>
-              Rating
+            <Typography variant="body1" gutterBottom>
+              Rating:
             </Typography>
             <Rating
               value={newReview.rating}
               onChange={(event, newValue) => {
-                setNewReview(prev => ({ ...prev, rating: newValue || 0 }));
+                setNewReview({ ...newReview, rating: newValue || 0 });
               }}
               size="large"
             />
@@ -257,7 +246,7 @@ const DoctorProfilePage: React.FC = () => {
               rows={4}
               label="Your Review"
               value={newReview.reviewText}
-              onChange={(e) => setNewReview(prev => ({ ...prev, reviewText: e.target.value }))}
+              onChange={(e) => setNewReview({ ...newReview, reviewText: e.target.value })}
               sx={{ mt: 2 }}
             />
           </Box>
@@ -273,4 +262,4 @@ const DoctorProfilePage: React.FC = () => {
   );
 };
 
-export default DoctorProfilePage;
+export default HospitalProfilePage;

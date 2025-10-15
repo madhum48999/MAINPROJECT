@@ -59,8 +59,7 @@ public class AdminService {
             hospital.setZipCode(request.getZipCode());
             hospital.setPhone(request.getPhone());
             hospital.setEmail(request.getEmail());
-            // Set a default password or generate one
-            hospital.setPassword(passwordEncoder.encode("defaultPassword"));
+            hospital.setPassword(passwordEncoder.encode(request.getPassword()));
             hospital.setRole("HOSPITAL");
             return hospitalRepository.save(hospital);
         }
@@ -89,8 +88,7 @@ public class AdminService {
             doctor.setLicenseNumber(request.getLicenseNumber());
             doctor.setEmail(request.getEmail());
             doctor.setSpecialization(request.getSpecialization());
-            // Set a default password or generate one
-            doctor.setPassword(passwordEncoder.encode("defaultPassword"));
+            doctor.setPassword(passwordEncoder.encode(request.getPassword()));
             doctor.setRole("DOCTOR");
             return doctorRepository.save(doctor);
         }

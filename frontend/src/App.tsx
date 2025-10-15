@@ -24,6 +24,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import SearchResultsPage from './pages/SearchResultsPage';
 import DoctorProfilePage from './pages/DoctorProfilePage';
+import HospitalProfilePage from './pages/HospitalProfilePage';
 
 interface ProtectedRouteProps {
   element: React.ReactElement;
@@ -141,6 +142,7 @@ const App: React.FC = () => {
               <Route path="/doctor" element={<ProtectedRoute element={<DoctorDashboard />} requiredRole="DOCTOR" />} />
               <Route path="/search" element={<SearchResultsPage />} />
               <Route path="/doctor-profile/:doctorId" element={<DoctorProfilePage />} />
+              <Route path="/hospital-profile/:hospitalId" element={<HospitalProfilePage />} />
             </Routes>
           </Router>
         </LocalizationProvider>

@@ -183,6 +183,14 @@ const SearchResultsPage: React.FC = () => {
           <Typography variant="body2" color="text.secondary">
             {doctor.phone}
           </Typography>
+          <Button
+            variant="outlined"
+            size="small"
+            sx={{ mt: 1 }}
+            onClick={() => navigate(`/doctor-profile/${doctor.did}`)}
+          >
+            View Profile
+          </Button>
         </CardContent>
       </Card>
     </Grid>
@@ -210,6 +218,14 @@ const SearchResultsPage: React.FC = () => {
           <Typography variant="body2" color="text.secondary">
             {hospital.phone}
           </Typography>
+          <Button
+            variant="outlined"
+            size="small"
+            sx={{ mt: 1 }}
+            onClick={() => navigate(`/hospital-profile/${hospital.hid}`)}
+          >
+            View Profile
+          </Button>
         </CardContent>
       </Card>
     </Grid>
