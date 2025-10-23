@@ -1,154 +1,273 @@
-import React, { useState, useMemo } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, IconButton, Box } from '@mui/material';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import ErrorBoundary from './components/ErrorBoundary';
-import Breadcrumb from './components/Breadcrumb';
-import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import ApprovalPendingPage from './pages/ApprovalPendingPage';
-import PatientDashboard from './pages/PatientDashboard';
-import AdminDashboard from './pages/AdminDashboard';
-import HospitalDashboard from './pages/HospitalDashboard';
-import DoctorDashboard from './pages/DoctorDashboard';
-import ChangePasswordPage from './pages/ChangePasswordPage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
-import SearchResultsPage from './pages/SearchResultsPage';
-import DoctorProfilePage from './pages/DoctorProfilePage';
-import HospitalProfilePage from './pages/HospitalProfilePage';
+import { useState } from 'react';
+import { AuthProvider, useAuth } from './lib/auth-context';
+import { AppStoreProvider } from './lib/app-store';
+import { LandingPage } from './components/LandingPage';
+import { LoginPage } from './components/LoginPage';
+import { DashboardLayout } from './components/DashboardLayout';
+import { PatientDashboard } from './components/patient/PatientDashboard';
+import { BookAppointment } from './components/patient/BookAppointment';
+import { MyAppointments } from './components/patient/MyAppointments';
+import { PatientProfile } from './components/patient/PatientProfile';
+import { OnlinePharmacy } from './components/patient/OnlinePharmacy';
+import { NutritionWellness } from './components/patient/NutritionWellness';
+import { YogaFitness } from './components/patient/YogaFitness';
+import { ChatInterface } from './components/common/ChatInterface';
+import { DoctorDashboard } from './components/doctor/DoctorDashboard';
+import { HospitalDashboard } from './components/hospital/HospitalDashboard';
+import { AdminDashboard } from './components/admin/AdminDashboard';
+import { HospitalManagement } from './components/admin/HospitalManagement';
+import { DoctorManagement } from './components/admin/DoctorManagement';
+import { ConfigStatus } from './components/ConfigStatus';
+import { Toaster } from './components/ui/sonner';
 
-interface ProtectedRouteProps {
-  element: React.ReactElement;
-  requiredRole?: string;
-}
+function AppContent() {
+  const [currentPath, setCurrentPath] = useState('/');
+  const { isAuthenticated, user } = useAuth();
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ element, requiredRole }) => {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-  try {
-    const decoded: any = jwtDecode(token);
-    if (requiredRole && decoded.role !== requiredRole) {
-      return <Navigate to="/" replace />;
+  const navigate = (path: string) => {
+    setCurrentPath(path);
+  };
+
+  // Render based on current path
+  const renderContent = () => {
+    // Public routes
+    if (currentPath === '/') {
+      return <LandingPage onNavigate={navigate} />;
     }
-    return element;
-  } catch (error) {
-    return <Navigate to="/login" replace />;
-  }
-};
 
-const App: React.FC = () => {
-  const [darkMode, setDarkMode] = useState(false);
+    if (currentPath === '/login') {
+      return <LoginPage onNavigate={navigate} role="patient" />;
+    }
 
-  const theme = useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode: darkMode ? 'dark' : 'light',
-          primary: {
-            main: '#1976d2',
-          },
-          secondary: {
-            main: '#dc004e',
-          },
-          background: {
-            default: darkMode ? '#121212' : '#fafafa',
-            paper: darkMode ? '#1e1e1e' : '#ffffff',
-          },
-        },
-        typography: {
-          fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-          h4: {
-            fontWeight: 600,
-          },
-          h6: {
-            fontWeight: 600,
-          },
-        },
-        components: {
-          MuiButton: {
-            styleOverrides: {
-              root: {
-                borderRadius: 8,
-                textTransform: 'none',
-                fontWeight: 600,
-              },
-            },
-          },
-          MuiPaper: {
-            styleOverrides: {
-              root: {
-                borderRadius: 12,
-                boxShadow: darkMode
-                  ? '0 4px 6px rgba(0, 0, 0, 0.3)'
-                  : '0 4px 6px rgba(0, 0, 0, 0.1)',
-              },
-            },
-          },
-        },
-      }),
-    [darkMode]
-  );
+    if (currentPath === '/admin-login') {
+      return <LoginPage onNavigate={navigate} role="admin" />;
+    }
 
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
+    if (currentPath === '/doctor-login') {
+      return <LoginPage onNavigate={navigate} role="doctor" />;
+    }
+
+    if (currentPath === '/hospital-login') {
+      return <LoginPage onNavigate={navigate} role="hospital" />;
+    }
+
+    // Protected routes - require authentication
+    if (!isAuthenticated) {
+      return <LandingPage onNavigate={navigate} />;
+    }
+
+    // Patient routes
+    if (user?.role === 'patient') {
+      return (
+        <DashboardLayout role="patient" onNavigate={navigate} currentPath={currentPath}>
+          {currentPath === '/patient/dashboard' && <PatientDashboard onNavigate={navigate} />}
+          {currentPath === '/patient/book/video' && <BookAppointment type="video" />}
+          {currentPath === '/patient/book/chat' && <BookAppointment type="chat" />}
+          {currentPath === '/patient/book/inperson' && <BookAppointment type="inperson" />}
+          {currentPath === '/patient/book/hospital' && <BookAppointment type="hospital" />}
+          {currentPath === '/patient/appointments' && <MyAppointments />}
+          {currentPath === '/patient/chat' && <ChatInterface />}
+          {currentPath === '/patient/meetings' && (
+            <div className="space-y-4">
+              <h1 className="text-3xl">Video Consultations</h1>
+              <p className="text-gray-600">Your video consultation meetings</p>
+              <div className="bg-white border rounded-lg p-8 text-center">
+                <p className="text-gray-500">Video meeting interface will be displayed here</p>
+              </div>
+            </div>
+          )}
+          {currentPath === '/patient/reports' && (
+            <div className="space-y-4">
+              <h1 className="text-3xl">Medical Reports</h1>
+              <p className="text-gray-600">View and download your medical reports</p>
+              <div className="bg-white border rounded-lg p-8 text-center">
+                <p className="text-gray-500">Reports list will be displayed here</p>
+              </div>
+            </div>
+          )}
+          {currentPath === '/patient/pharmacy' && <OnlinePharmacy />}
+          {currentPath === '/patient/nutrition' && <NutritionWellness />}
+          {currentPath === '/patient/yoga' && <YogaFitness />}
+          {currentPath === '/my-profile' && <PatientProfile />}
+        </DashboardLayout>
+      );
+    }
+
+    // Doctor routes
+    if (user?.role === 'doctor') {
+      return (
+        <DashboardLayout role="doctor" onNavigate={navigate} currentPath={currentPath}>
+          {currentPath === '/doctor-dashboard' && <DoctorDashboard />}
+          {currentPath === '/doctor/appointments' && (
+            <div className="space-y-4">
+              <h1 className="text-3xl">Appointments</h1>
+              <p className="text-gray-600">Manage your patient appointments</p>
+              <div className="bg-white border rounded-lg p-8 text-center">
+                <p className="text-gray-500">Appointments management will be displayed here</p>
+              </div>
+            </div>
+          )}
+          {currentPath === '/doctor/patients' && (
+            <div className="space-y-4">
+              <h1 className="text-3xl">My Patients</h1>
+              <p className="text-gray-600">View patient records and history</p>
+              <div className="bg-white border rounded-lg p-8 text-center">
+                <p className="text-gray-500">Patient list will be displayed here</p>
+              </div>
+            </div>
+          )}
+          {currentPath === '/doctor/schedule' && (
+            <div className="space-y-4">
+              <h1 className="text-3xl">My Schedule</h1>
+              <p className="text-gray-600">Manage your availability</p>
+              <div className="bg-white border rounded-lg p-8 text-center">
+                <p className="text-gray-500">Schedule management will be displayed here</p>
+              </div>
+            </div>
+          )}
+          {currentPath === '/doctor/chat' && <ChatInterface />}
+          {currentPath === '/doctor/meetings' && (
+            <div className="space-y-4">
+              <h1 className="text-3xl">Video Consultations</h1>
+              <p className="text-gray-600">Conduct video consultations</p>
+              <div className="bg-white border rounded-lg p-8 text-center">
+                <p className="text-gray-500">Video meeting interface will be displayed here</p>
+              </div>
+            </div>
+          )}
+          {currentPath === '/doctor/profile' && (
+            <div className="space-y-4">
+              <h1 className="text-3xl">My Profile</h1>
+              <p className="text-gray-600">Manage your profile and credentials</p>
+              <div className="bg-white border rounded-lg p-8 text-center">
+                <p className="text-gray-500">Profile settings will be displayed here</p>
+              </div>
+            </div>
+          )}
+        </DashboardLayout>
+      );
+    }
+
+    // Hospital routes
+    if (user?.role === 'hospital') {
+      return (
+        <DashboardLayout role="hospital" onNavigate={navigate} currentPath={currentPath}>
+          {currentPath === '/hospital-dashboard' && <HospitalDashboard />}
+          {currentPath === '/hospital/doctors' && (
+            <div className="space-y-4">
+              <h1 className="text-3xl">Manage Doctors</h1>
+              <p className="text-gray-600">Add and manage doctors at your facility</p>
+              <div className="bg-white border rounded-lg p-8 text-center">
+                <p className="text-gray-500">Doctor management will be displayed here</p>
+              </div>
+            </div>
+          )}
+          {currentPath === '/hospital/appointments' && (
+            <div className="space-y-4">
+              <h1 className="text-3xl">Appointments</h1>
+              <p className="text-gray-600">Manage hospital appointments</p>
+              <div className="bg-white border rounded-lg p-8 text-center">
+                <p className="text-gray-500">Appointment management will be displayed here</p>
+              </div>
+            </div>
+          )}
+          {currentPath === '/hospital/patients' && (
+            <div className="space-y-4">
+              <h1 className="text-3xl">Patients</h1>
+              <p className="text-gray-600">View patient records</p>
+              <div className="bg-white border rounded-lg p-8 text-center">
+                <p className="text-gray-500">Patient records will be displayed here</p>
+              </div>
+            </div>
+          )}
+          {currentPath === '/hospital/profile' && (
+            <div className="space-y-4">
+              <h1 className="text-3xl">Hospital Profile</h1>
+              <p className="text-gray-600">Manage hospital information</p>
+              <div className="bg-white border rounded-lg p-8 text-center">
+                <p className="text-gray-500">Hospital profile will be displayed here</p>
+              </div>
+            </div>
+          )}
+        </DashboardLayout>
+      );
+    }
+
+    // Admin routes
+    if (user?.role === 'admin') {
+      return (
+        <DashboardLayout role="admin" onNavigate={navigate} currentPath={currentPath}>
+          {currentPath === '/admin' && <AdminDashboard />}
+          {currentPath === '/admin/hospitals' && <HospitalManagement />}
+          {currentPath === '/admin/doctors' && <DoctorManagement />}
+          {currentPath === '/admin/patients' && (
+            <div className="space-y-4">
+              <h1 className="text-3xl">Patients</h1>
+              <p className="text-gray-600">View and manage patient records</p>
+              <div className="bg-white border rounded-lg p-8 text-center">
+                <p className="text-gray-500">Patient records will be displayed here</p>
+              </div>
+            </div>
+          )}
+          {currentPath === '/admin/appointments' && (
+            <div className="space-y-4">
+              <h1 className="text-3xl">All Appointments</h1>
+              <p className="text-gray-600">Monitor system-wide appointments</p>
+              <div className="bg-white border rounded-lg p-8 text-center">
+                <p className="text-gray-500">Appointment monitoring will be displayed here</p>
+              </div>
+            </div>
+          )}
+          {currentPath === '/admin/emergency' && (
+            <div className="space-y-4">
+              <h1 className="text-3xl">Emergency Requests</h1>
+              <p className="text-gray-600">Handle emergency consultations</p>
+              <div className="bg-white border rounded-lg p-8 text-center">
+                <p className="text-gray-500">Emergency management will be displayed here</p>
+              </div>
+            </div>
+          )}
+          {currentPath === '/admin/reports' && (
+            <div className="space-y-4">
+              <h1 className="text-3xl">System Reports</h1>
+              <p className="text-gray-600">Generate and export system reports</p>
+              <div className="bg-white border rounded-lg p-8 text-center">
+                <p className="text-gray-500">Reports will be displayed here</p>
+              </div>
+            </div>
+          )}
+          {currentPath === '/admin/settings' && (
+            <div className="space-y-4">
+              <h1 className="text-3xl">System Settings</h1>
+              <p className="text-gray-600">Configure system settings</p>
+              <div className="bg-white border rounded-lg p-8 text-center">
+                <p className="text-gray-500">Settings will be displayed here</p>
+              </div>
+            </div>
+          )}
+        </DashboardLayout>
+      );
+    }
+
+    // Default fallback
+    return <LandingPage onNavigate={navigate} />;
   };
 
   return (
-    <ErrorBoundary>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme={darkMode ? 'dark' : 'light'}
-        />
-        <Box sx={{ position: 'fixed', top: 16, right: 16, zIndex: 1000 }}>
-          <IconButton onClick={toggleDarkMode} color="inherit">
-            {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
-          </IconButton>
-        </Box>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Router>
-            <Breadcrumb />
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/approval-pending" element={<ApprovalPendingPage />} />
-              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-              <Route path="/reset-password" element={<ResetPasswordPage />} />
-              <Route path="/change-password" element={<ProtectedRoute element={<ChangePasswordPage />} />} />
-              <Route path="/patient" element={<ProtectedRoute element={<PatientDashboard />} requiredRole="USER" />} />
-              <Route path="/admin" element={<ProtectedRoute element={<AdminDashboard />} requiredRole="ADMIN" />} />
-              <Route path="/hospital" element={<ProtectedRoute element={<HospitalDashboard />} requiredRole="HOSPITAL" />} />
-              <Route path="/doctor" element={<ProtectedRoute element={<DoctorDashboard />} requiredRole="DOCTOR" />} />
-              <Route path="/search" element={<SearchResultsPage />} />
-              <Route path="/doctor-profile/:doctorId" element={<DoctorProfilePage />} />
-              <Route path="/hospital-profile/:hospitalId" element={<HospitalProfilePage />} />
-            </Routes>
-          </Router>
-        </LocalizationProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
+    <>
+      {renderContent()}
+      <Toaster />
+    </>
   );
-};
+}
 
-export default App;
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppStoreProvider>
+        <AppContent />
+        <ConfigStatus />
+      </AppStoreProvider>
+    </AuthProvider>
+  );
+}

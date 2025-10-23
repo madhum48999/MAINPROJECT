@@ -1,6 +1,10 @@
 package com.healthcare.app.controller;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -97,6 +101,29 @@ public class FileUploadController {
         } catch (IOException e) {
             response.put("error", "Failed to delete file: " + e.getMessage());
             return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    @GetMapping("/download/{filePath:.+}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String filePath) {
+        try {
+            Path fullPath = Paths.get(uploadDir).resolve(filePath);
+            if (!Files.exists(fullPath)) {
+                return ResponseEntity.notFound().build();
+            }
+
+            Resource resource = new FileSystemResource(fullPath);
+            String contentType = Files.probeContentType(fullPath);
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fullPath.getFileName().toString() + "\"")
+                    .body(resource);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

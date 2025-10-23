@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -85,5 +86,10 @@ public class PatientController {
     public ResponseEntity<Patient> updateProfile(@RequestHeader("Authorization") String authHeader, @RequestBody Patient updatedPatient) {
         String patientId = patientService.extractPatientIdFromAuthHeader(authHeader);
         return ResponseEntity.ok(patientService.updatePatientProfile(patientId, updatedPatient));
+    }
+
+    @PutMapping("/appointments/{appointmentId}/reschedule")
+    public ResponseEntity<Appointment> rescheduleAppointment(@PathVariable Long appointmentId, @RequestBody LocalDateTime newDateTime) {
+        return ResponseEntity.ok(appointmentService.rescheduleAppointment(appointmentId, newDateTime));
     }
 }

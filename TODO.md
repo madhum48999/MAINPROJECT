@@ -1,63 +1,59 @@
-# TODO: Modernize Healthcare Appointment Booking System
+# TODO: Remove Backend Code from Frontend and Merge Backend Functions
 
-## Steps to Complete
+## Overview
+Remove mock data, API client, and config switching from frontend. Translate Java backend services to TypeScript services and integrate directly into frontend.
 
-### 1. UI/UX Modernization
-- [x] Implement consistent modern theme with dark mode supports
-- [x] Enhance responsiveness and mobile-friendliness across all pages
-- [x] Add smooth animations and transitions using MUI components
-- [x] Improve form validation with real-time feedback
-- [x] Clean up RegisterPage.tsx (remove duplicate form code, keep stepper version)
+## Tasks
 
-### 2. Complete Doctor Dashboard (from existing TODO.md)
-- [x] Add tabs to DoctorDashboard.tsx for Manage Availability, Appointments, Medical Records
-- [x] Implement Manage Availability: Fetch and display current availability, add new availability slots, delete existing ones
-- [x] Implement Appointments: Fetch and display appointments, allow updating status (e.g., complete, cancel)
-- [x] Implement Medical Records: Fetch and display medical records, allow creating new records
+### Phase 1: Create TypeScript Services from Java Backend
+- [ ] Create `frontend/src/services/AuthService.ts` from `backend/src/main/java/com/healthcare/app/service/AuthService.java`
+- [ ] Create `frontend/src/services/PatientService.ts` from `backend/src/main/java/com/healthcare/app/service/PatientService.java`
+- [ ] Create `frontend/src/services/DoctorService.ts` from `backend/src/main/java/com/healthcare/app/service/DoctorService.java`
+- [ ] Create `frontend/src/services/HospitalService.ts` from `backend/src/main/java/com/healthcare/app/service/HospitalService.java`
+- [ ] Create `frontend/src/services/AppointmentService.ts` from `backend/src/main/java/com/healthcare/app/service/AppointmentService.java`
+- [ ] Create `frontend/src/services/AdminService.ts` from `backend/src/main/java/com/healthcare/app/service/AdminService.java`
+- [ ] Create `frontend/src/services/NotificationService.ts` from `backend/src/main/java/com/healthcare/app/service/NotificationService.java`
+- [ ] Create `frontend/src/services/ReminderService.ts` from `backend/src/main/java/com/healthcare/app/service/ReminderService.java`
+- [ ] Create `frontend/src/services/ReviewService.ts` from `backend/src/main/java/com/healthcare/app/service/ReviewService.java`
+- [ ] Create `frontend/src/services/SearchService.ts` from `backend/src/main/java/com/healthcare/app/service/SearchService.java`
+- [ ] Create `frontend/src/services/EmailService.ts` from `backend/src/main/java/com/healthcare/app/service/EmailService.java`
+- [ ] Create `frontend/src/services/SmsService.ts` from `backend/src/main/java/com/healthcare/app/service/SmsService.java`
 
-### 3. Add Functional Search
-- [x] Make HomePage search bar functional to search doctors, hospitals, specializations
-- [x] Add backend endpoints for search functionality
-- [x] Add filters and sorting options to search results
-- [x] Implement search results page with pagination
+### Phase 2: Create In-Memory Data Storage
+- [ ] Create `frontend/src/lib/data-store.ts` for in-memory data storage
+- [ ] Implement repositories pattern for data access
+- [ ] Add initial data seeding
 
-### 4. Enhance User Experience
-- [x] Add loading states and skeleton screens throughout the app
-- [x] Implement toast notifications for actions (success, error, info)
-- [x] Add confirmation dialogs for critical actions (delete, cancel appointment)
-- [x] Improve error handling with user-friendly messages
-- [x] Add breadcrumbs and navigation improvements
+### Phase 3: Remove Backend-Related Files
+- [ ] Delete `frontend/src/lib/mock-data.ts`
+- [ ] Delete `frontend/src/lib/api-client.ts`
+- [ ] Delete `frontend/src/lib/config.ts`
+- [ ] Delete `frontend/src/public/config.js`
+- [ ] Remove config.js script tag from `frontend/index.html`
 
-### 5. Increase Versatility
-- [x] Add patient medical history view in PatientDashboard
-- [x] Implement appointment reminders and notifications (backend + frontend)
-- [x] Add hospital/doctor profiles with ratings/reviews system
-- [ ] Enable file uploads for medical documents (prescriptions, reports)
-- [ ] Add appointment rescheduling functionality
+### Phase 4: Update App Store
+- [ ] Update `frontend/src/lib/app-store.tsx` to use new services directly
+- [ ] Remove USE_BACKEND checks and config dependencies
+- [ ] Update all CRUD operations to use services
 
-### 6. Code Quality Improvements
-- [ ] Remove duplicate code across components
-- [ ] Implement proper state management (Context API for auth/user state)
-- [ ] Add TypeScript interfaces for all data models
-- [ ] Refactor components for reusability (create shared components)
-- [x] Add proper error boundaries
+### Phase 5: Update Auth Context
+- [ ] Update `frontend/src/lib/auth-context.tsx` to use AuthService directly
+- [ ] Remove API calls and use service methods
 
-### 7. Backend Enhancements
-- [ ] Add more RESTful endpoints for new features (search, ratings, file uploads)
-- [ ] Implement pagination and filtering for lists (appointments, medical records)
-- [ ] Add email/SMS notifications service integration
-- [ ] Improve security with rate limiting and enhanced input validation
-- [ ] Add audit logging for critical operations
+### Phase 6: Update Components and Hooks
+- [ ] Update all hooks in `frontend/src/hooks/` to use services directly
+- [ ] Update components that use API calls
+- [ ] Test all functionality works with new services
 
-### 8. Dependency Updates and Testing
-- [ ] Update frontend dependencies to latest stable versions
-- [ ] Update backend dependencies in pom.xml
-- [ ] Add unit tests for new components and services
-- [ ] Add integration tests for API endpoints
-- [ ] Update documentation (README.md, API docs)
+### Phase 7: Testing and Cleanup
+- [ ] Test authentication flow
+- [ ] Test CRUD operations for all entities
+- [ ] Test appointment booking and management
+- [ ] Clean up any unused imports or files
+- [ ] Update documentation
 
-### 9. Deployment and CI/CD
-- [ ] Add Docker optimizations for production
-- [ ] Consider adding CI/CD pipeline (GitHub Actions)
-- [ ] Add environment-specific configurations
-- [ ] Performance optimizations (lazy loading, code splitting)
+## Notes
+- All services will use in-memory data storage instead of database
+- Password encoding will be simplified for frontend
+- Email/SMS services will be mocked
+- JWT tokens will be simplified
