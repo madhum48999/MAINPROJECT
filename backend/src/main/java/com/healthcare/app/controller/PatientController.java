@@ -20,11 +20,13 @@ import java.util.List;
 @RequestMapping("/api/patient")
 public class PatientController {
 
-    @Autowired
-    private PatientService patientService;
+    private final PatientService patientService;
+    private final AppointmentService appointmentService;
 
-    @Autowired
-    private AppointmentService appointmentService;
+    public PatientController(PatientService patientService, AppointmentService appointmentService) {
+        this.patientService = patientService;
+        this.appointmentService = appointmentService;
+    }
 
     @PostMapping("/appointments")
     public ResponseEntity<Appointment> bookAppointment(@RequestBody Appointment appointment) {

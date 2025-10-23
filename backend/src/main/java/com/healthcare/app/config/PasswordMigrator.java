@@ -8,7 +8,6 @@ import com.healthcare.app.repository.AdminRepository;
 import com.healthcare.app.repository.DoctorRepository;
 import com.healthcare.app.repository.HospitalRepository;
 import com.healthcare.app.repository.PatientRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -18,20 +17,21 @@ import java.util.List;
 @Component
 public class PasswordMigrator {
 
-    @Autowired
-    private AdminRepository adminRepository;
+    private final AdminRepository adminRepository;
+    private final DoctorRepository doctorRepository;
+    private final HospitalRepository hospitalRepository;
+    private final PatientRepository patientRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private DoctorRepository doctorRepository;
-
-    @Autowired
-    private HospitalRepository hospitalRepository;
-
-    @Autowired
-    private PatientRepository patientRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public PasswordMigrator(AdminRepository adminRepository, DoctorRepository doctorRepository,
+                            HospitalRepository hospitalRepository, PatientRepository patientRepository,
+                            PasswordEncoder passwordEncoder) {
+        this.adminRepository = adminRepository;
+        this.doctorRepository = doctorRepository;
+        this.hospitalRepository = hospitalRepository;
+        this.patientRepository = patientRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @PostConstruct
     public void migratePasswords() {

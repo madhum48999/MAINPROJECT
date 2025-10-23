@@ -17,23 +17,26 @@ import java.util.Optional;
 @Service
 public class AppointmentService {
 
-    @Autowired
-    private AppointmentRepository appointmentRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final AvailabilityRepository availabilityRepository;
+    private final PatientRepository patientRepository;
+    private final ReminderService reminderService;
+    private final NotificationService notificationService;
+    private final EmailService emailService;
 
-    @Autowired
-    private AvailabilityRepository availabilityRepository;
-
-    @Autowired
-    private PatientRepository patientRepository;
-
-    @Autowired
-    private ReminderService reminderService;
-
-    @Autowired
-    private NotificationService notificationService;
-
-    @Autowired
-    private EmailService emailService;
+    public AppointmentService(AppointmentRepository appointmentRepository,
+                              AvailabilityRepository availabilityRepository,
+                              PatientRepository patientRepository,
+                              ReminderService reminderService,
+                              NotificationService notificationService,
+                              EmailService emailService) {
+        this.appointmentRepository = appointmentRepository;
+        this.availabilityRepository = availabilityRepository;
+        this.patientRepository = patientRepository;
+        this.reminderService = reminderService;
+        this.notificationService = notificationService;
+        this.emailService = emailService;
+    }
 
     public Appointment bookAppointment(Appointment appointment) {
         // Check if doctor is available at the time

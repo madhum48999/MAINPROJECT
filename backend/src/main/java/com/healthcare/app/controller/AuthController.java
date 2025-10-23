@@ -13,26 +13,25 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
+    private final HospitalRegistrationRequestRepository hospitalRequestRepository;
+    private final DoctorRegistrationRequestRepository doctorRequestRepository;
+    private final PatientRepository patientRepository;
+    private final AdminRepository adminRepository;
+    private final HospitalRepository hospitalRepository;
+    private final DoctorRepository doctorRepository;
 
-    @Autowired
-    private HospitalRegistrationRequestRepository hospitalRequestRepository;
-
-    @Autowired
-    private DoctorRegistrationRequestRepository doctorRequestRepository;
-
-    @Autowired
-    private PatientRepository patientRepository;
-
-    @Autowired
-    private AdminRepository adminRepository;
-
-    @Autowired
-    private HospitalRepository hospitalRepository;
-
-    @Autowired
-    private DoctorRepository doctorRepository;
+    public AuthController(AuthService authService, HospitalRegistrationRequestRepository hospitalRequestRepository,
+                         DoctorRegistrationRequestRepository doctorRequestRepository, PatientRepository patientRepository,
+                         AdminRepository adminRepository, HospitalRepository hospitalRepository, DoctorRepository doctorRepository) {
+        this.authService = authService;
+        this.hospitalRequestRepository = hospitalRequestRepository;
+        this.doctorRequestRepository = doctorRequestRepository;
+        this.patientRepository = patientRepository;
+        this.adminRepository = adminRepository;
+        this.hospitalRepository = hospitalRepository;
+        this.doctorRepository = doctorRepository;
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegistrationRequest request) {

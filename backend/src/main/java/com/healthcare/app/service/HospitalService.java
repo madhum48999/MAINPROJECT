@@ -14,14 +14,17 @@ import java.util.List;
 @Service
 public class HospitalService {
 
-    @Autowired
-    private HospitalRepository hospitalRepository;
+    private final HospitalRepository hospitalRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final MedicalRecordRepository medicalRecordRepository;
 
-    @Autowired
-    private AppointmentRepository appointmentRepository;
-
-    @Autowired
-    private MedicalRecordRepository medicalRecordRepository;
+    public HospitalService(HospitalRepository hospitalRepository,
+                           AppointmentRepository appointmentRepository,
+                           MedicalRecordRepository medicalRecordRepository) {
+        this.hospitalRepository = hospitalRepository;
+        this.appointmentRepository = appointmentRepository;
+        this.medicalRecordRepository = medicalRecordRepository;
+    }
 
     public Hospital getHospitalById(String id) {
         return hospitalRepository.findById(id).orElseThrow(() -> new RuntimeException("Hospital not found"));

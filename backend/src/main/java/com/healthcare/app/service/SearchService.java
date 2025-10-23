@@ -17,11 +17,13 @@ import java.util.stream.Collectors;
 @Service
 public class SearchService {
 
-    @Autowired
-    private DoctorRepository doctorRepository;
+    private final DoctorRepository doctorRepository;
+    private final HospitalRepository hospitalRepository;
 
-    @Autowired
-    private HospitalRepository hospitalRepository;
+    public SearchService(DoctorRepository doctorRepository, HospitalRepository hospitalRepository) {
+        this.doctorRepository = doctorRepository;
+        this.hospitalRepository = hospitalRepository;
+    }
 
     public Page<Doctor> searchDoctors(String query, String specialization, int page, int size) {
         List<Doctor> allDoctors = doctorRepository.findAll();

@@ -10,8 +10,11 @@ import java.util.List;
 @Service
 public class ReviewService {
 
-    @Autowired
-    private ReviewRepository reviewRepository;
+    private final ReviewRepository reviewRepository;
+
+    public ReviewService(ReviewRepository reviewRepository) {
+        this.reviewRepository = reviewRepository;
+    }
 
     public Review saveReview(Review review) {
         return reviewRepository.save(review);

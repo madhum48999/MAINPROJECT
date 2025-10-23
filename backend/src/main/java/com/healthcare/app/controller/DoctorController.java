@@ -19,14 +19,15 @@ import java.util.List;
 @RequestMapping("/api/doctor")
 public class DoctorController {
 
-    @Autowired
-    private DoctorService doctorService;
+    private final DoctorService doctorService;
+    private final AppointmentService appointmentService;
+    private final AvailabilityService availabilityService;
 
-    @Autowired
-    private AppointmentService appointmentService;
-
-    @Autowired
-    private AvailabilityService availabilityService;
+    public DoctorController(DoctorService doctorService, AppointmentService appointmentService, AvailabilityService availabilityService) {
+        this.doctorService = doctorService;
+        this.appointmentService = appointmentService;
+        this.availabilityService = availabilityService;
+    }
 
     @GetMapping("/specialization")
     public ResponseEntity<List<Doctor>> getDoctorsBySpecialization(@RequestParam String specialization) {

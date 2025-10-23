@@ -11,11 +11,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @SpringBootApplication
 public class App implements CommandLineRunner {
 
-    @Autowired
-    private AdminRepository adminRepository;
+    private final AdminRepository adminRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public App(AdminRepository adminRepository, PasswordEncoder passwordEncoder) {
+        this.adminRepository = adminRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);

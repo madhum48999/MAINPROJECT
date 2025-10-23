@@ -22,29 +22,32 @@ import java.util.stream.Collectors;
 @Service
 public class PatientService {
 
-    @Autowired
-    private PatientRepository patientRepository;
+    private final PatientRepository patientRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final MedicalRecordRepository medicalRecordRepository;
+    private final DoctorRepository doctorRepository;
+    private final AvailabilityRepository availabilityRepository;
+    private final ReminderService reminderService;
+    private final NotificationService notificationService;
+    private final JwtUtil jwtUtil;
 
-    @Autowired
-    private AppointmentRepository appointmentRepository;
-
-    @Autowired
-    private MedicalRecordRepository medicalRecordRepository;
-
-    @Autowired
-    private DoctorRepository doctorRepository;
-
-    @Autowired
-    private AvailabilityRepository availabilityRepository;
-
-    @Autowired
-    private ReminderService reminderService;
-
-    @Autowired
-    private NotificationService notificationService;
-
-    @Autowired
-    private JwtUtil jwtUtil;
+    public PatientService(PatientRepository patientRepository,
+                          AppointmentRepository appointmentRepository,
+                          MedicalRecordRepository medicalRecordRepository,
+                          DoctorRepository doctorRepository,
+                          AvailabilityRepository availabilityRepository,
+                          ReminderService reminderService,
+                          NotificationService notificationService,
+                          JwtUtil jwtUtil) {
+        this.patientRepository = patientRepository;
+        this.appointmentRepository = appointmentRepository;
+        this.medicalRecordRepository = medicalRecordRepository;
+        this.doctorRepository = doctorRepository;
+        this.availabilityRepository = availabilityRepository;
+        this.reminderService = reminderService;
+        this.notificationService = notificationService;
+        this.jwtUtil = jwtUtil;
+    }
 
     public Patient getPatientById(String patientId) {
         return patientRepository.findByPatientId(patientId).orElseThrow(() -> new RuntimeException("Patient not found"));

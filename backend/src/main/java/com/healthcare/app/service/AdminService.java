@@ -2,7 +2,6 @@ package com.healthcare.app.service;
 
 import com.healthcare.app.entity.*;
 import com.healthcare.app.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -12,23 +11,29 @@ import java.util.UUID;
 @Service
 public class AdminService {
 
-    @Autowired
-    private HospitalRegistrationRequestRepository hospitalRequestRepository;
+    private final HospitalRegistrationRequestRepository hospitalRequestRepository;
+    private final DoctorRegistrationRequestRepository doctorRequestRepository;
+    private final HospitalRepository hospitalRepository;
+    private final DoctorRepository doctorRepository;
+    private final PatientRepository patientRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AppointmentRepository appointmentRepository;
 
-    @Autowired
-    private DoctorRegistrationRequestRepository doctorRequestRepository;
-
-    @Autowired
-    private HospitalRepository hospitalRepository;
-
-    @Autowired
-    private DoctorRepository doctorRepository;
-
-    @Autowired
-    private PatientRepository patientRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public AdminService(HospitalRegistrationRequestRepository hospitalRequestRepository,
+                       DoctorRegistrationRequestRepository doctorRequestRepository,
+                       HospitalRepository hospitalRepository,
+                       DoctorRepository doctorRepository,
+                       PatientRepository patientRepository,
+                       PasswordEncoder passwordEncoder,
+                       AppointmentRepository appointmentRepository) {
+        this.hospitalRequestRepository = hospitalRequestRepository;
+        this.doctorRequestRepository = doctorRequestRepository;
+        this.hospitalRepository = hospitalRepository;
+        this.doctorRepository = doctorRepository;
+        this.patientRepository = patientRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.appointmentRepository = appointmentRepository;
+    }
 
     public List<HospitalRegistrationRequest> getPendingHospitalRequests() {
         return hospitalRequestRepository.findAll().stream()
@@ -182,9 +187,6 @@ public class AdminService {
     public void deleteDoctor(String id) {
         doctorRepository.deleteById(id);
     }
-
-    @Autowired
-    private AppointmentRepository appointmentRepository;
 
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();

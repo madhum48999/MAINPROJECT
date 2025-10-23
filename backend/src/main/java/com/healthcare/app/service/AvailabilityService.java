@@ -11,8 +11,11 @@ import java.util.List;
 @Service
 public class AvailabilityService {
 
-    @Autowired
-    private AvailabilityRepository availabilityRepository;
+    private final AvailabilityRepository availabilityRepository;
+
+    public AvailabilityService(AvailabilityRepository availabilityRepository) {
+        this.availabilityRepository = availabilityRepository;
+    }
 
     public Availability setAvailability(Availability availability) {
         return availabilityRepository.save(availability);

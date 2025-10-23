@@ -16,20 +16,23 @@ import java.util.List;
 @Service
 public class DoctorService {
 
-    @Autowired
-    private DoctorRepository doctorRepository;
+    private final DoctorRepository doctorRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final AvailabilityRepository availabilityRepository;
+    private final MedicalRecordRepository medicalRecordRepository;
+    private final com.healthcare.app.repository.PatientRepository patientRepository;
 
-    @Autowired
-    private AppointmentRepository appointmentRepository;
-
-    @Autowired
-    private AvailabilityRepository availabilityRepository;
-
-    @Autowired
-    private MedicalRecordRepository medicalRecordRepository;
-
-    @Autowired
-    private com.healthcare.app.repository.PatientRepository patientRepository;
+    public DoctorService(DoctorRepository doctorRepository,
+                         AppointmentRepository appointmentRepository,
+                         AvailabilityRepository availabilityRepository,
+                         MedicalRecordRepository medicalRecordRepository,
+                         com.healthcare.app.repository.PatientRepository patientRepository) {
+        this.doctorRepository = doctorRepository;
+        this.appointmentRepository = appointmentRepository;
+        this.availabilityRepository = availabilityRepository;
+        this.medicalRecordRepository = medicalRecordRepository;
+        this.patientRepository = patientRepository;
+    }
 
     public Doctor getDoctorById(String id) {
         return doctorRepository.findById(id).orElseThrow(() -> new RuntimeException("Doctor not found"));

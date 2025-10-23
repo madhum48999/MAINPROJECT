@@ -8,7 +8,6 @@ import com.healthcare.app.repository.AdminRepository;
 import com.healthcare.app.repository.DoctorRepository;
 import com.healthcare.app.repository.HospitalRepository;
 import com.healthcare.app.repository.PatientRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -17,20 +16,23 @@ import jakarta.annotation.PostConstruct;
 @Component
 public class DataInitializer {
 
-    @Autowired
-    private AdminRepository adminRepository;
+    private static final String DEFAULT_PASSWORD = "password";
 
-    @Autowired
-    private DoctorRepository doctorRepository;
+    private final AdminRepository adminRepository;
+    private final DoctorRepository doctorRepository;
+    private final HospitalRepository hospitalRepository;
+    private final PatientRepository patientRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private HospitalRepository hospitalRepository;
-
-    @Autowired
-    private PatientRepository patientRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public DataInitializer(AdminRepository adminRepository, DoctorRepository doctorRepository,
+                           HospitalRepository hospitalRepository, PatientRepository patientRepository,
+                           PasswordEncoder passwordEncoder) {
+        this.adminRepository = adminRepository;
+        this.doctorRepository = doctorRepository;
+        this.hospitalRepository = hospitalRepository;
+        this.patientRepository = patientRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @PostConstruct
     public void init() {
@@ -50,7 +52,7 @@ public class DataInitializer {
             patient.setPatientId("P001");
             patient.setName("John Doe");
             patient.setEmail("patient@example.com");
-            patient.setPassword(passwordEncoder.encode("password"));
+            patient.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD));
             patient.setRole("PATIENT");
             patient.setPhone("123-456-7890");
             patient.setFirstName("John");
@@ -92,7 +94,7 @@ public class DataInitializer {
                 Doctor doctor = new Doctor();
                 doctor.setName(data[0]);
                 doctor.setEmail(data[1]);
-                doctor.setPassword(passwordEncoder.encode("password"));
+                doctor.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD));
                 doctor.setSpecialization(data[2]);
                 doctor.setHospitalId(null);
                 doctor.setRole("DOCTOR");
@@ -105,7 +107,7 @@ public class DataInitializer {
             Hospital hospital = new Hospital();
             hospital.setHospitalName("General Hospital");
             hospital.setEmail("hospital@gmail.com");
-            hospital.setPassword(passwordEncoder.encode("password"));
+            hospital.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD));
             hospital.setAddress("456 Oak Ave");
             hospital.setCity("New York");
             hospital.setState("NY");

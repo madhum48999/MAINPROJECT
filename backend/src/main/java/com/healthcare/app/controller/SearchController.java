@@ -14,8 +14,11 @@ import java.util.List;
 @RequestMapping("/api/search")
 public class SearchController {
 
-    @Autowired
-    private SearchService searchService;
+    private final SearchService searchService;
+
+    public SearchController(SearchService searchService) {
+        this.searchService = searchService;
+    }
 
     @GetMapping("/doctors")
     public ResponseEntity<Page<Doctor>> searchDoctors(

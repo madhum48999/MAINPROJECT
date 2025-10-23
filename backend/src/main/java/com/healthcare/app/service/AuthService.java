@@ -16,35 +16,38 @@ import java.util.UUID;
 @Service
 public class AuthService {
 
-    @Autowired
-    private PatientRepository patientRepository;
+    private final PatientRepository patientRepository;
+    private final AdminRepository adminRepository;
+    private final HospitalRepository hospitalRepository;
+    private final DoctorRepository doctorRepository;
+    private final HospitalRegistrationRequestRepository hospitalRequestRepository;
+    private final DoctorRegistrationRequestRepository doctorRequestRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final OtpRepository otpRepository;
+    private final EmailService emailService;
 
-    @Autowired
-    private AdminRepository adminRepository;
-
-    @Autowired
-    private HospitalRepository hospitalRepository;
-
-    @Autowired
-    private DoctorRepository doctorRepository;
-
-    @Autowired
-    private HospitalRegistrationRequestRepository hospitalRequestRepository;
-
-    @Autowired
-    private DoctorRegistrationRequestRepository doctorRequestRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @Autowired
-    private OtpRepository otpRepository;
-
-    @Autowired
-    private EmailService emailService;
+    public AuthService(PatientRepository patientRepository,
+                       AdminRepository adminRepository,
+                       HospitalRepository hospitalRepository,
+                       DoctorRepository doctorRepository,
+                       HospitalRegistrationRequestRepository hospitalRequestRepository,
+                       DoctorRegistrationRequestRepository doctorRequestRepository,
+                       PasswordEncoder passwordEncoder,
+                       JwtUtil jwtUtil,
+                       OtpRepository otpRepository,
+                       EmailService emailService) {
+        this.patientRepository = patientRepository;
+        this.adminRepository = adminRepository;
+        this.hospitalRepository = hospitalRepository;
+        this.doctorRepository = doctorRepository;
+        this.hospitalRequestRepository = hospitalRequestRepository;
+        this.doctorRequestRepository = doctorRequestRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
+        this.otpRepository = otpRepository;
+        this.emailService = emailService;
+    }
 
     public Object register(RegistrationRequest request) {
         String role = request.getRole().toUpperCase();

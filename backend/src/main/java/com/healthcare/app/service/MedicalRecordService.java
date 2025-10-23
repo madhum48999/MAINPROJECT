@@ -10,8 +10,11 @@ import java.util.List;
 @Service
 public class MedicalRecordService {
 
-    @Autowired
-    private MedicalRecordRepository medicalRecordRepository;
+    private final MedicalRecordRepository medicalRecordRepository;
+
+    public MedicalRecordService(MedicalRecordRepository medicalRecordRepository) {
+        this.medicalRecordRepository = medicalRecordRepository;
+    }
 
     public MedicalRecord createRecord(MedicalRecord record) {
         return medicalRecordRepository.save(record);

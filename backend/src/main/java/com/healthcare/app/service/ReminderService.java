@@ -15,17 +15,20 @@ import java.util.Optional;
 @Service
 public class ReminderService {
 
-    @Autowired
-    private ReminderRepository reminderRepository;
+    private final ReminderRepository reminderRepository;
+    private final PatientRepository patientRepository;
+    private final SmsService smsService;
+    private final EmailService emailService;
 
-    @Autowired
-    private PatientRepository patientRepository;
-
-    @Autowired
-    private SmsService smsService;
-
-    @Autowired
-    private EmailService emailService;
+    public ReminderService(ReminderRepository reminderRepository,
+                           PatientRepository patientRepository,
+                           SmsService smsService,
+                           EmailService emailService) {
+        this.reminderRepository = reminderRepository;
+        this.patientRepository = patientRepository;
+        this.smsService = smsService;
+        this.emailService = emailService;
+    }
 
     public List<Reminder> getRemindersByPatient(String patientId) {
         return reminderRepository.findByPatientIdOrderByReminderDateAsc(patientId);

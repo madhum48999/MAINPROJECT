@@ -23,11 +23,13 @@ import com.healthcare.app.service.HospitalService;
 @RequestMapping("/api/hospital")
 public class HospitalController {
 
-    @Autowired
-    private HospitalService hospitalService;
+    private final HospitalService hospitalService;
+    private final AppointmentService appointmentService;
 
-    @Autowired
-    private AppointmentService appointmentService;
+    public HospitalController(HospitalService hospitalService, AppointmentService appointmentService) {
+        this.hospitalService = hospitalService;
+        this.appointmentService = appointmentService;
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Hospital> getHospital(@PathVariable String id) {
