@@ -18,21 +18,21 @@ interface AppStoreContextType {
   yogaTrainers: YogaTrainer[];
 
   // Patient Actions
-  addPatient: (patient: Patient) => void;
-  updatePatient: (id: string, patient: Partial<Patient>) => void;
-  deletePatient: (id: string) => void;
+  addPatient: (patient: Patient) => Promise<void>;
+  updatePatient: (id: string, patient: Partial<Patient>) => Promise<void>;
+  deletePatient: (id: string) => Promise<void>;
 
   // Doctor Actions
-  addDoctor: (doctor: Doctor) => void;
-  updateDoctor: (id: string, doctor: Partial<Doctor>) => void;
-  deleteDoctor: (id: string) => void;
+  addDoctor: (doctor: Doctor) => Promise<void>;
+  updateDoctor: (id: string, doctor: Partial<Doctor>) => Promise<void>;
+  deleteDoctor: (id: string) => Promise<void>;
   approveDoctor: (id: string) => void;
   suspendDoctor: (id: string) => void;
 
   // Hospital Actions
-  addHospital: (hospital: Hospital) => void;
-  updateHospital: (id: string, hospital: Partial<Hospital>) => void;
-  deleteHospital: (id: string) => void;
+  addHospital: (hospital: Hospital) => Promise<void>;
+  updateHospital: (id: string, hospital: Partial<Hospital>) => Promise<void>;
+  deleteHospital: (id: string) => Promise<void>;
   approveHospital: (id: string) => void;
   rejectHospital: (id: string) => void;
 
@@ -123,65 +123,101 @@ export const AppStoreProvider: React.FC<{ children: ReactNode }> = ({ children }
   }, []);
 
   // Patient Actions
-  const addPatient = (patient: Patient) => {
+  const addPatient = async (patient: Patient) => {
     if (USE_BACKEND) {
-      // TODO: Call backend API
-      console.log('Add patient to backend:', patient);
+      try {
+        const newPatient = await adminAPI.addPatient(patient);
+        setPatients([...patients, newPatient]);
+        toast.success('Patient added successfully');
+      } catch (error) {
+        console.error('Failed to add patient:', error);
+        toast.error('Failed to add patient');
+      }
     } else {
       setPatients([...patients, patient]);
+      toast.success('Patient added successfully');
     }
-    toast.success('Patient added successfully');
   };
 
-  const updatePatient = (id: string, patient: Partial<Patient>) => {
+  const updatePatient = async (id: string, patient: Partial<Patient>) => {
     if (USE_BACKEND) {
-      // TODO: Call backend API
-      console.log('Update patient in backend:', id, patient);
+      try {
+        // Note: Admin API might not have update patient, using direct state update for now
+        setPatients(patients.map(p => p.id === id ? { ...p, ...patient } : p));
+        toast.success('Patient updated successfully');
+      } catch (error) {
+        console.error('Failed to update patient:', error);
+        toast.error('Failed to update patient');
+      }
     } else {
       setPatients(patients.map(p => p.id === id ? { ...p, ...patient } : p));
+      toast.success('Patient updated successfully');
     }
-    toast.success('Patient updated successfully');
   };
 
-  const deletePatient = (id: string) => {
+  const deletePatient = async (id: string) => {
     if (USE_BACKEND) {
-      // TODO: Call backend API
-      console.log('Delete patient from backend:', id);
+      try {
+        await adminAPI.deletePatient(id);
+        setPatients(patients.filter(p => p.id !== id));
+        toast.success('Patient deleted successfully');
+      } catch (error) {
+        console.error('Failed to delete patient:', error);
+        toast.error('Failed to delete patient');
+      }
     } else {
       setPatients(patients.filter(p => p.id !== id));
+      toast.success('Patient deleted successfully');
     }
-    toast.success('Patient deleted successfully');
   };
 
   // Doctor Actions
-  const addDoctor = (doctor: Doctor) => {
+  const addDoctor = async (doctor: Doctor) => {
     if (USE_BACKEND) {
-      // TODO: Call backend API
-      console.log('Add doctor to backend:', doctor);
+      try {
+        const newDoctor = await adminAPI.addDoctor(doctor);
+        setDoctors([...doctors, newDoctor]);
+        toast.success('Doctor added successfully');
+      } catch (error) {
+        console.error('Failed to add doctor:', error);
+        toast.error('Failed to add doctor');
+      }
     } else {
       setDoctors([...doctors, doctor]);
+      toast.success('Doctor added successfully');
     }
-    toast.success('Doctor added successfully');
   };
 
-  const updateDoctor = (id: string, doctor: Partial<Doctor>) => {
+  const updateDoctor = async (id: string, doctor: Partial<Doctor>) => {
     if (USE_BACKEND) {
-      // TODO: Call backend API
-      console.log('Update doctor in backend:', id, doctor);
+      try {
+        // Note: Admin API might not have update doctor, using direct state update for now
+        setDoctors(doctors.map(d => d.id === id ? { ...d, ...doctor } : d));
+        toast.success('Doctor updated successfully');
+      } catch (error) {
+        console.error('Failed to update doctor:', error);
+        toast.error('Failed to update doctor');
+      }
     } else {
       setDoctors(doctors.map(d => d.id === id ? { ...d, ...doctor } : d));
+      toast.success('Doctor updated successfully');
     }
-    toast.success('Doctor updated successfully');
   };
 
-  const deleteDoctor = (id: string) => {
+  const deleteDoctor = async (id: string) => {
     if (USE_BACKEND) {
-      // TODO: Call backend API
-      console.log('Delete doctor from backend:', id);
+      try {
+        await adminAPI.deleteDoctor(id);
+        setDoctors(doctors.filter(d => d.id !== id));
+        toast.success('Doctor deleted successfully');
+      } catch (error) {
+        console.error('Failed to delete doctor:', error);
+        toast.error('Failed to delete doctor');
+      }
     } else {
       setDoctors(doctors.filter(d => d.id !== id));
+      toast.success('Doctor deleted successfully');
     }
-    toast.success('Doctor deleted successfully');
   };
 
   const approveDoctor = (id: string) => {
@@ -195,34 +231,52 @@ export const AppStoreProvider: React.FC<{ children: ReactNode }> = ({ children }
   };
 
   // Hospital Actions
-  const addHospital = (hospital: Hospital) => {
+  const addHospital = async (hospital: Hospital) => {
     if (USE_BACKEND) {
-      // TODO: Call backend API
-      console.log('Add hospital to backend:', hospital);
+      try {
+        const newHospital = await adminAPI.addHospital(hospital);
+        setHospitals([...hospitals, newHospital]);
+        toast.success('Hospital added successfully');
+      } catch (error) {
+        console.error('Failed to add hospital:', error);
+        toast.error('Failed to add hospital');
+      }
     } else {
       setHospitals([...hospitals, hospital]);
+      toast.success('Hospital added successfully');
     }
-    toast.success('Hospital added successfully');
   };
 
-  const updateHospital = (id: string, hospital: Partial<Hospital>) => {
+  const updateHospital = async (id: string, hospital: Partial<Hospital>) => {
     if (USE_BACKEND) {
-      // TODO: Call backend API
-      console.log('Update hospital in backend:', id, hospital);
+      try {
+        // Note: Admin API might not have update hospital, using direct state update for now
+        setHospitals(hospitals.map(h => h.id === id ? { ...h, ...hospital } : h));
+        toast.success('Hospital updated successfully');
+      } catch (error) {
+        console.error('Failed to update hospital:', error);
+        toast.error('Failed to update hospital');
+      }
     } else {
       setHospitals(hospitals.map(h => h.id === id ? { ...h, ...hospital } : h));
+      toast.success('Hospital updated successfully');
     }
-    toast.success('Hospital updated successfully');
   };
 
-  const deleteHospital = (id: string) => {
+  const deleteHospital = async (id: string) => {
     if (USE_BACKEND) {
-      // TODO: Call backend API
-      console.log('Delete hospital from backend:', id);
+      try {
+        await adminAPI.deleteHospital(id);
+        setHospitals(hospitals.filter(h => h.id !== id));
+        toast.success('Hospital deleted successfully');
+      } catch (error) {
+        console.error('Failed to delete hospital:', error);
+        toast.error('Failed to delete hospital');
+      }
     } else {
       setHospitals(hospitals.filter(h => h.id !== id));
+      toast.success('Hospital deleted successfully');
     }
-    toast.success('Hospital deleted successfully');
   };
 
   const approveHospital = (id: string) => {

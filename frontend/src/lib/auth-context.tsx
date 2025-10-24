@@ -1,7 +1,11 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { User } from '../types';
 import { authAPI } from './api-client';
+import { AuthService } from '../services/AuthService';
+import { USE_BACKEND } from './config';
 import { toast } from 'sonner';
+
+const authService = new AuthService();
 
 interface AuthContextType {
   user: User | null;
@@ -46,17 +50,34 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const token = await authAPI.login(email, password);
-      localStorage.setItem('authToken', token);
+      if (USE_BACKEND) {
+        const token = await authAPI.login(email, password);
+        localStorage.setItem('authToken', token);
 
-      // Get user data after successful login
-      const userData = await authAPI.me();
-      setUser({
-        id: userData.id,
-        name: userData.name,
-        email: userData.email,
-        role: userData.role,
-      });
+        // Get user data after successful login
+        const userData = await authAPI.me();
+        setUser({
+          id: userData.id,
+          name: userData.name,
+          email: userData.email,
+          role: userData.role,
+        });
+      } else {
+        // Use local AuthService for mock authentication
+        const token = authService.login(email, password);
+        localStorage.setItem('authToken', token);
+
+        // Get user data from local service
+        const userData = authService.getCurrentUser(email);
+        if (userData) {
+          setUser({
+            id: userData.id,
+            name: userData.name,
+            email: userData.email,
+            role: userData.role,
+          });
+        }
+      }
 
       toast.success('Login successful');
       return true;
@@ -75,7 +96,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const register = async (userData: any) => {
     try {
-      await authAPI.register(userData);
+      if (USE_BACKEND) {
+        await authAPI.register(userData);
+      } else {
+        // Use local AuthService for mock registration
+        authService.register(userData);
+      }
       toast.success('Registration successful');
     } catch (error) {
       toast.error('Registration failed');

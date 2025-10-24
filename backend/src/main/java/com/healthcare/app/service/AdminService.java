@@ -18,6 +18,10 @@ public class AdminService {
     private final PatientRepository patientRepository;
     private final PasswordEncoder passwordEncoder;
     private final AppointmentRepository appointmentRepository;
+    private final MedicineRepository medicineRepository;
+    private final PrescriptionRepository prescriptionRepository;
+    private final NutritionPlanRepository nutritionPlanRepository;
+    private final YogaTrainerRepository yogaTrainerRepository;
 
     public AdminService(HospitalRegistrationRequestRepository hospitalRequestRepository,
                        DoctorRegistrationRequestRepository doctorRequestRepository,
@@ -25,7 +29,11 @@ public class AdminService {
                        DoctorRepository doctorRepository,
                        PatientRepository patientRepository,
                        PasswordEncoder passwordEncoder,
-                       AppointmentRepository appointmentRepository) {
+                       AppointmentRepository appointmentRepository,
+                       MedicineRepository medicineRepository,
+                       PrescriptionRepository prescriptionRepository,
+                       NutritionPlanRepository nutritionPlanRepository,
+                       YogaTrainerRepository yogaTrainerRepository) {
         this.hospitalRequestRepository = hospitalRequestRepository;
         this.doctorRequestRepository = doctorRequestRepository;
         this.hospitalRepository = hospitalRepository;
@@ -33,6 +41,10 @@ public class AdminService {
         this.patientRepository = patientRepository;
         this.passwordEncoder = passwordEncoder;
         this.appointmentRepository = appointmentRepository;
+        this.medicineRepository = medicineRepository;
+        this.prescriptionRepository = prescriptionRepository;
+        this.nutritionPlanRepository = nutritionPlanRepository;
+        this.yogaTrainerRepository = yogaTrainerRepository;
     }
 
     public List<HospitalRegistrationRequest> getPendingHospitalRequests() {
